@@ -10,7 +10,12 @@ import lombok.Setter;
 @Table(name = "passenger")
 public class Passenger {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(
+            name = "passengerIdSeqGen",
+            sequenceName = "passenger_id_seq",
+            allocationSize = 1
+    )
+    @GeneratedValue(generator = "passengerIdSeqGen")
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -19,4 +24,5 @@ public class Passenger {
 
     @Column(name = "phone", unique = true)
     private String phone;
+
 }
