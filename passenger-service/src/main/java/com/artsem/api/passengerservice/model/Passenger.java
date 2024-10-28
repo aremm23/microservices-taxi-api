@@ -50,4 +50,17 @@ public class Passenger {
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    @PrePersist
+    private void initializeTimestamps() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    private void updateTimestamp() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
