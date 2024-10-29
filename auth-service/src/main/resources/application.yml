@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: auth-service
+server:
+  port: 8081
+
+app:
+  keycloak:
+    admin:
+      client-id: ${APP_KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+      client-secret: ${APP_KEYCLOAK_ADMIN_CLIENT_SECRET:YM3aXVjgubdyWTw3OKyZIXFDAwdGwUSL}
+    user:
+      client-id: ${APP_KEYCLOAK_USER_CLIENT_ID:taxi-app-client}
+    realm: ${APP_KEYCLOAK_REALM:taxi-app-realm}
+    server-url: ${APP_KEYCLOAK_SERVER_URL:http://localhost:9082}
+    grant-type: ${APP_KEYCLOAK_GRANT_TYPE:client_credentials}
+
+  notification-service:
+    enabled: false
