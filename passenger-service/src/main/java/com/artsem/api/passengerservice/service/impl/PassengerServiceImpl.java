@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -95,12 +96,10 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
-        if(passengerDto.getEmail() != null) {
-            passenger.setEmail(passengerDto.getEmail());
-        }
-        if(passengerDto.getPhone() != null) {
-            passenger.setPhone(passengerDto.getPhone());
-        }
+        Optional.ofNullable(passengerDto.getEmail()).ifPresent(passenger::setEmail);
+        Optional.ofNullable(passengerDto.getPhone()).ifPresent(passenger::setPhone);
+        Optional.ofNullable(passengerDto.getFirstname()).ifPresent(passenger::setFirstname);
+        Optional.ofNullable(passengerDto.getSurname()).ifPresent(passenger::setSurname);
     }
 
 }

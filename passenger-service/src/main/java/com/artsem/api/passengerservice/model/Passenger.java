@@ -35,6 +35,12 @@ public class Passenger {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "firstname")
+    private String firstname;
+
+    @Column(name = "surname")
+    private String surname;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

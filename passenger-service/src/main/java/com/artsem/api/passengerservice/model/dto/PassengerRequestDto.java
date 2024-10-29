@@ -14,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class PassengerRequestDto {
     private String email;
     private String phone;
+    private String firstname;
+    private String surname;
 }
