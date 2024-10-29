@@ -1,8 +1,7 @@
 package com.artsem.api.authservice.controller;
 
-import com.artsem.api.authservice.model.UserRegisterDto;
 import com.artsem.api.authservice.model.UserLoginRecord;
-import com.artsem.api.authservice.service.RoleService;
+import com.artsem.api.authservice.model.UserRegisterDto;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.UserRegistrationService;
 import jakarta.validation.Valid;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     public final KeycloakService keycloakService;
-
-    public final RoleService roleService;
 
     public final UserRegistrationService userRegistrationService;
 
