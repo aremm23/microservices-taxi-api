@@ -45,7 +45,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponseDto create(PassengerRequestDto passengerDto) {
         Passenger passenger = mapper.map(passengerDto, Passenger.class);
-        checkIsPhoneOrUsernameExist(passengerDto);
+        checkIsPhoneOrEmailExist(passengerDto);
         Passenger savedPassenger = passengerRepository.save(passenger);
         return mapper.map(savedPassenger, PassengerResponseDto.class);
     }
@@ -54,7 +54,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto) {
         Passenger passenger = findPassengerById(id);
-        checkIsPhoneOrUsernameExist(passengerDto);
+        checkIsPhoneOrEmailExist(passengerDto);
         updateFields(passengerDto, passenger);
         Passenger updatedPassenger = passengerRepository.save(passenger);
         return mapper.map(updatedPassenger, PassengerResponseDto.class);
@@ -82,8 +82,8 @@ public class PassengerServiceImpl implements PassengerService {
         passengerRepository.deleteAll(passengers);
     }
 
-    private void checkIsPhoneOrUsernameExist(PassengerRequestDto passengerDto) {
-        if (passengerRepository.existsByUsernameOrPhone(passengerDto.getUsername(), passengerDto.getPhone())) {
+    private void checkIsPhoneOrEmailExist(PassengerRequestDto passengerDto) {
+        if (passengerRepository.existsByEmailOrPhone(passengerDto.getEmail(), passengerDto.getPhone())) {
             throw new PassengerNotCreatedException("Passenger with such phone or email already exist.");
         }
     }
@@ -95,8 +95,8 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
-        if(passengerDto.getUsername() != null) {
-            passenger.setUsername(passengerDto.getUsername());
+        if(passengerDto.getEmail() != null) {
+            passenger.setEmail(passengerDto.getEmail());
         }
         if(passengerDto.getPhone() != null) {
             passenger.setPhone(passengerDto.getPhone());

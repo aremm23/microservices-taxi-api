@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class PassengerResponseDto {
     private Long id;
-    private String username;
+    private String email;
     private String phone;
 }

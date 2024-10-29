@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PassengerRequestDto {
-    private String username;
+    private String email;
     private String phone;
 }

@@ -23,8 +23,8 @@ public class Passenger {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "username", unique = true)
-    private String username;
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(name = "phone", unique = true)
     private String phone;
