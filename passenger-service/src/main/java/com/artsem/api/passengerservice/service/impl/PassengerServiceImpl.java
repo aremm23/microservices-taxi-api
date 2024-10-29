@@ -10,6 +10,7 @@ import com.artsem.api.passengerservice.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     private final ModelMapper mapper;
 
+    @Transactional(readOnly = true)
     @Override
     public PassengerResponseDto getOne(Long id) {
         Passenger passenger = passengerRepository.findById(id).orElseThrow(
@@ -28,6 +30,8 @@ public class PassengerServiceImpl implements PassengerService {
         );
         return mapper.map(passenger, PassengerResponseDto.class);
     }
+
+    @Transactional(readOnly = true)
     @Override
     public List<PassengerResponseDto> getMany(List<Long> ids) {
         List<Passenger> passengers = passengerRepository.findAllById(ids);
@@ -39,6 +43,7 @@ public class PassengerServiceImpl implements PassengerService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public PassengerResponseDto create(PassengerRequestDto passengerDto) {
         Passenger passenger = mapper.map(passengerDto, Passenger.class);
@@ -53,6 +58,7 @@ public class PassengerServiceImpl implements PassengerService {
         }
     }
 
+    @Transactional
     @Override
     public PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto) {
         Passenger passenger = passengerRepository.findById(id).orElseThrow(
@@ -73,6 +79,7 @@ public class PassengerServiceImpl implements PassengerService {
         }
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         if (!passengerRepository.existsById(id)) {
@@ -81,6 +88,7 @@ public class PassengerServiceImpl implements PassengerService {
         passengerRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public void deleteMany(List<Long> ids) {
         if (ids.isEmpty()) {
