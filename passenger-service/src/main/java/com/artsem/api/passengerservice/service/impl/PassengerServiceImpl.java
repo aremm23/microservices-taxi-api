@@ -25,9 +25,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Transactional(readOnly = true)
     @Override
     public PassengerResponseDto getOne(Long id) {
-        Passenger passenger = passengerRepository.findById(id).orElseThrow(
-                () -> new PassengerNotFoundedException("Passenger with id %d not found".formatted(id))
-        );
+        Passenger passenger = findPassengerById(id);
         return mapper.map(passenger, PassengerResponseDto.class);
     }
 
@@ -52,31 +50,14 @@ public class PassengerServiceImpl implements PassengerService {
         return mapper.map(savedPassenger, PassengerResponseDto.class);
     }
 
-    private void checkIsPhoneOrUsernameExist(PassengerRequestDto passengerDto) {
-        if (passengerRepository.existsByUsernameOrPhone(passengerDto.getUsername(), passengerDto.getPhone())) {
-            throw new PassengerNotCreatedException("Passenger with such phone or email already exist.");
-        }
-    }
-
     @Transactional
     @Override
     public PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto) {
-        Passenger passenger = passengerRepository.findById(id).orElseThrow(
-                () -> new PassengerNotFoundedException("Passenger with id %d not found".formatted(id))
-        );
+        Passenger passenger = findPassengerById(id);
         checkIsPhoneOrUsernameExist(passengerDto);
         updateFields(passengerDto, passenger);
         Passenger updatedPassenger = passengerRepository.save(passenger);
         return mapper.map(updatedPassenger, PassengerResponseDto.class);
-    }
-
-    private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
-        if(passengerDto.getUsername() != null) {
-            passenger.setUsername(passengerDto.getUsername());
-        }
-        if(passengerDto.getPhone() != null) {
-            passenger.setPhone(passengerDto.getPhone());
-        }
     }
 
     @Transactional
@@ -99,6 +80,27 @@ public class PassengerServiceImpl implements PassengerService {
             throw new PassengerNotFoundedException("Some passengers not found for the provided IDs");
         }
         passengerRepository.deleteAll(passengers);
+    }
+
+    private void checkIsPhoneOrUsernameExist(PassengerRequestDto passengerDto) {
+        if (passengerRepository.existsByUsernameOrPhone(passengerDto.getUsername(), passengerDto.getPhone())) {
+            throw new PassengerNotCreatedException("Passenger with such phone or email already exist.");
+        }
+    }
+
+    private Passenger findPassengerById(Long id) {
+        return passengerRepository.findById(id).orElseThrow(
+                () -> new PassengerNotFoundedException("Passenger with id %d not found".formatted(id))
+        );
+    }
+
+    private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
+        if(passengerDto.getUsername() != null) {
+            passenger.setUsername(passengerDto.getUsername());
+        }
+        if(passengerDto.getPhone() != null) {
+            passenger.setPhone(passengerDto.getPhone());
+        }
     }
 
 }
