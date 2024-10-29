@@ -3,6 +3,7 @@ package com.artsem.api.passengerservice.controller;
 import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
 import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
 import com.artsem.api.passengerservice.service.PassengerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class PassengerController {
     }
 
     @PostMapping
-    public ResponseEntity<PassengerResponseDto> create(@RequestBody PassengerRequestDto passengerDto) {
+    public ResponseEntity<PassengerResponseDto> create(@Valid @RequestBody PassengerRequestDto passengerDto) {
         PassengerResponseDto createdPassenger = passengerService.create(passengerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPassenger);
     }
@@ -38,7 +39,7 @@ public class PassengerController {
     @PatchMapping("/{id}")
     public ResponseEntity<PassengerResponseDto> patch(
             @PathVariable Long id,
-            @RequestBody PassengerRequestDto passengerDto
+            @Valid @RequestBody PassengerRequestDto passengerDto
     ) {
         PassengerResponseDto updatedPassenger = passengerService.patch(id, passengerDto);
         return ResponseEntity.ok(updatedPassenger);
