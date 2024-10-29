@@ -15,5 +15,7 @@ app:
     server-url: ${APP_KEYCLOAK_SERVER_URL:http://localhost:9082}
     grant-type: ${APP_KEYCLOAK_GRANT_TYPE:client_credentials}
 
+
+taxi-api:
   notification-service:
     enabled: false
