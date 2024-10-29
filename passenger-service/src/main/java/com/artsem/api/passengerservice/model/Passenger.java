@@ -23,10 +23,10 @@ public class Passenger {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "phone", unique = true)
+    @Column(name = "phone", unique = true, nullable = false)
     private String phone;
 
     @Column(name = "created_at")
