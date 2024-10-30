@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
  * RabbitSender is responsible for sending messages related to user registration
  * via RabbitMQ. This class will handle sending messages for different types of users.
  */
-@Service
 public interface RabbitSender {
 
     /**
