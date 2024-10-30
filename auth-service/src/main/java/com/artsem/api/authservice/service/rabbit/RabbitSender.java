@@ -1,7 +1,6 @@
 package com.artsem.api.authservice.service.rabbit;
 
 import com.artsem.api.authservice.model.UserRegisterDto;
-import org.springframework.stereotype.Service;
 
 
 /**
