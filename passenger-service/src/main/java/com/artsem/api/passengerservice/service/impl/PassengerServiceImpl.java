@@ -50,7 +50,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Transactional
     @Override
-    public PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto) {
+    public PassengerResponseDto patch(Long id, PassengerUpdateRequestDto passengerDto) {
         Passenger passenger = findPassengerById(id);
         updateFields(passengerDto, passenger);
         Passenger updatedPassenger = passengerRepository.save(passenger);
@@ -91,7 +91,7 @@ public class PassengerServiceImpl implements PassengerService {
         );
     }
 
-    private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
+    private void updateFields(PassengerUpdateRequestDto passengerDto, Passenger passenger) {
         Optional.ofNullable(passengerDto.getEmail())
                 .ifPresent(passenger::setEmail);
         Optional.ofNullable(passengerDto.getFirstname())

@@ -2,6 +2,7 @@ package com.artsem.api.passengerservice.service;
 
 import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
 import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
+import com.artsem.api.passengerservice.model.dto.PassengerUpdateRequestDto;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface PassengerService {
 
     PassengerResponseDto create(PassengerRequestDto passenger);
 
-    PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto);
+    PassengerResponseDto patch(Long id, PassengerUpdateRequestDto passengerDto);
 
     void delete(Long id);
 

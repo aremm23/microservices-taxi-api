@@ -2,6 +2,7 @@ package com.artsem.api.passengerservice.controller;
 
 import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
 import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
+import com.artsem.api.passengerservice.model.dto.PassengerUpdateRequestDto;
 import com.artsem.api.passengerservice.service.PassengerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class PassengerController {
     @PatchMapping("/{id}")
     public ResponseEntity<PassengerResponseDto> patch(
             @PathVariable Long id,
-            @Valid @RequestBody PassengerRequestDto passengerDto
+            @Valid @RequestBody PassengerUpdateRequestDto passengerDto
     ) {
         PassengerResponseDto updatedPassenger = passengerService.patch(id, passengerDto);
         return ResponseEntity.ok(updatedPassenger);
