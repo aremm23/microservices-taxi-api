@@ -30,4 +30,6 @@ public final class UserRegisterDto {
     @Size(max = 50, message = "Surname must not exceed 50 characters")
     private String lastname;
 
+    @NotBlank(message = "User role must not be blank")
+    private UserRole userRole;
 }

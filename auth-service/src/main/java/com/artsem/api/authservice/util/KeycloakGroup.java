@@ -9,5 +9,6 @@ public enum KeycloakGroup {
     DRIVER("DRIVER"),
     PASSENGER("PASSENGER"),
     MANAGER("MANAGER");
+
     private final String group;
 }

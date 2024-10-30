@@ -7,5 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum KeycloakEvent {
     UPDATE_PASSWORD("UPDATE_PASSWORD");
+
     private final String event;
 }

@@ -1,12 +1,11 @@
-package com.artsem.api.authservice.util;
+package com.artsem.api.authservice.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum KeycloakRole {
-    ADMIN("ADMIN"),
+public enum UserRole {
     PASSENGER("PASSENGER"),
     DRIVER("DRIVER");
 
