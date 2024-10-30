@@ -2,9 +2,11 @@ package com.artsem.api.passengerservice.service.impl;
 
 import com.artsem.api.passengerservice.exceptions.PassengerNotCreatedException;
 import com.artsem.api.passengerservice.exceptions.PassengerNotFoundedException;
+import com.artsem.api.passengerservice.exceptions.PassengerNotUpdatedException;
 import com.artsem.api.passengerservice.model.Passenger;
 import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
 import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
+import com.artsem.api.passengerservice.model.dto.PassengerUpdateRequestDto;
 import com.artsem.api.passengerservice.repository.PassengerRepository;
 import com.artsem.api.passengerservice.service.PassengerService;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +54,18 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponseDto patch(Long id, PassengerUpdateRequestDto passengerDto) {
         Passenger passenger = findPassengerById(id);
+        checkExistingEmail(id, passengerDto.getEmail());
         updateFields(passengerDto, passenger);
         Passenger updatedPassenger = passengerRepository.save(passenger);
         return mapper.map(updatedPassenger, PassengerResponseDto.class);
+    }
+
+    private void checkExistingEmail(Long id, String newEmail) {
+        Long existingPassengerWithEmailId = passengerRepository.findIdByEmail(newEmail);
+
+        if (existingPassengerWithEmailId != null && !existingPassengerWithEmailId.equals(id)) {
+            throw new PassengerNotUpdatedException("Such email already exists");
+        }
     }
 
     @Transactional
