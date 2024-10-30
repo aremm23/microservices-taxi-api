@@ -24,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok(roleService.getAllUserRoles(keycloakService.findUserById(id)));
     }
 
-    @PatchMapping("/forgot-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<HttpStatus> forgotPassword(@RequestParam String username) {
         keycloakService.forgotPassword(username);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

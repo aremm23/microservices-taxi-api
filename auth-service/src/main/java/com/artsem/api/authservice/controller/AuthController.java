@@ -28,21 +28,15 @@ public class AuthController {
         return ResponseEntity.ok(keycloakService.getJwt(userLoginRecord));
     }
 
-    @PostMapping("/register-passenger")
-    public ResponseEntity<HttpStatus> createPassenger(@RequestBody @Valid UserRegisterDto userRegisterDto) {
-        userRegistrationService.createPassenger(userRegisterDto);
+    @PostMapping("/register/user")
+    public ResponseEntity<HttpStatus> createUser(@RequestBody @Valid UserRegisterDto userRegisterDto) {
+        userRegistrationService.createUser(userRegisterDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/register-admin")
+    @PostMapping("/register/admin")
     public ResponseEntity<HttpStatus> createAdmin(@RequestBody @Valid UserRegisterDto userRegisterDto) {
         userRegistrationService.createAdmin(userRegisterDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/register-driver")
-    public ResponseEntity<HttpStatus> createDriver(@RequestBody @Valid UserRegisterDto userRegisterDto) {
-        userRegistrationService.createDriver(userRegisterDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
