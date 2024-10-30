@@ -19,7 +19,7 @@ public class GroupController {
 
 
     @PutMapping("/{userId}")
-    public ResponseEntity<?> assignGroupToUser(
+    public ResponseEntity<HttpStatus> assignGroupToUser(
             @PathVariable("userId") String userId,
             @RequestParam("group") KeycloakGroup keycloakGroup
     ) {
@@ -28,7 +28,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteGroupFromUser(
+    public ResponseEntity<HttpStatus> deleteGroupFromUser(
             @PathVariable("userId") String userId,
             @RequestParam("group") KeycloakGroup keycloakGroup
     ) {

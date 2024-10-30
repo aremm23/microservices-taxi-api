@@ -51,6 +51,7 @@ public class KeycloakServiceImpl implements KeycloakService {
      * "email confirmed" by default (`true`) after registration.
      * Similarly, email confirmation status will be set to `true` after password changes.
      */
+    // TODO: to be implemented
     @Value("${taxi-api.notification-service.enabled}")
     private boolean isNotificationServiceEnabled;
 

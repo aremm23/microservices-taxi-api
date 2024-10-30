@@ -25,19 +25,19 @@ public class UserController {
     }
 
     @PatchMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam String username) {
+    public ResponseEntity<HttpStatus> forgotPassword(@RequestParam String username) {
         keycloakService.forgotPassword(username);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/{id}/verification-email")
-    public ResponseEntity<?> sendVerifyEmail(@PathVariable String id) {
+    public ResponseEntity<HttpStatus> sendVerifyEmail(@PathVariable String id) {
         keycloakService.sendVerificationEmail(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable String id) {
         keycloakService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -18,7 +18,7 @@ public class RolesController {
     private final RoleService roleService;
 
     @PutMapping("/{userId}")
-    public ResponseEntity<?> assignRole(
+    public ResponseEntity<HttpStatus> assignRole(
             @PathVariable("userId") String userId,
             @RequestParam("role") KeycloakRole keycloakRole
     ) {
@@ -27,7 +27,7 @@ public class RolesController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteRole(
+    public ResponseEntity<HttpStatus> deleteRole(
             @PathVariable("userId") String userId,
             @RequestParam("role") KeycloakRole keycloakRole
     ) {
