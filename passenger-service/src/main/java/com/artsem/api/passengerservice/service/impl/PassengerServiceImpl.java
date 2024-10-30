@@ -34,9 +34,6 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public List<PassengerResponseDto> getMany(List<Long> ids) {
         List<Passenger> passengers = passengerRepository.findAllById(ids);
-        if (passengers.isEmpty()) {
-            throw new PassengerNotFoundedException("No passengers found for the provided IDs");
-        }
         return passengers.stream()
                 .map(passenger -> mapper.map(passenger, PassengerResponseDto.class))
                 .toList();
@@ -46,7 +43,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponseDto create(PassengerRequestDto passengerDto) {
         Passenger passenger = mapper.map(passengerDto, Passenger.class);
-        checkIsPhoneOrEmailExist(passengerDto);
+        checkIsEmailExist(passengerDto);
         Passenger savedPassenger = passengerRepository.save(passenger);
         return mapper.map(savedPassenger, PassengerResponseDto.class);
     }
@@ -55,7 +52,6 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponseDto patch(Long id, PassengerRequestDto passengerDto) {
         Passenger passenger = findPassengerById(id);
-        checkIsPhoneOrEmailExist(passengerDto);
         updateFields(passengerDto, passenger);
         Passenger updatedPassenger = passengerRepository.save(passenger);
         return mapper.map(updatedPassenger, PassengerResponseDto.class);
@@ -83,7 +79,7 @@ public class PassengerServiceImpl implements PassengerService {
         passengerRepository.deleteAll(passengers);
     }
 
-    private void checkIsPhoneOrEmailExist(PassengerRequestDto passengerDto) {
+    private void checkIsEmailExist(PassengerRequestDto passengerDto) {
         if (passengerRepository.existsByEmail(passengerDto.getEmail())) {
             throw new PassengerNotCreatedException("Passenger with such email already exist.");
         }
@@ -96,9 +92,12 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
-        Optional.ofNullable(passengerDto.getEmail()).ifPresent(passenger::setEmail);
-        Optional.ofNullable(passengerDto.getFirstname()).ifPresent(passenger::setFirstname);
-        Optional.ofNullable(passengerDto.getSurname()).ifPresent(passenger::setSurname);
+        Optional.ofNullable(passengerDto.getEmail())
+                .ifPresent(passenger::setEmail);
+        Optional.ofNullable(passengerDto.getFirstname())
+                .ifPresent(passenger::setFirstname);
+        Optional.ofNullable(passengerDto.getSurname())
+                .ifPresent(passenger::setSurname);
     }
 
 }
