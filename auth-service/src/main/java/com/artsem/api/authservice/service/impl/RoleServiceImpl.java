@@ -16,16 +16,20 @@ public class RoleServiceImpl implements RoleService {
 
     private final RolesResource rolesResource;
 
+    private List<RoleRepresentation> getRoleRepresentationList(KeycloakRole keycloakRole) {
+        return List.of(rolesResource.get(keycloakRole.getRole()).toRepresentation());
+    }
+
     @Override
     public void assignRole(KeycloakRole keycloakRole, UserResource userResource) {
-        var role = rolesResource.get(keycloakRole.getRole()).toRepresentation();
-        userResource.roles().realmLevel().add(List.of(role));
+        List<RoleRepresentation> rolesList = getRoleRepresentationList(keycloakRole);
+        userResource.roles().realmLevel().add(rolesList);
     }
 
     @Override
     public void deleteRoleFromUser(KeycloakRole keycloakRole, UserResource userResource) {
-        var role = rolesResource.get(keycloakRole.getRole()).toRepresentation();
-        userResource.roles().realmLevel().remove(List.of(role));
+        List<RoleRepresentation> rolesList = getRoleRepresentationList(keycloakRole);
+        userResource.roles().realmLevel().remove(rolesList);
     }
 
     @Override

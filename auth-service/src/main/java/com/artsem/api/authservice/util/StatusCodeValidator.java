@@ -10,8 +10,10 @@ public class StatusCodeValidator {
     public static final Set<Integer> VALID_STATUSES = Set.of(200, 201, 204, 209);
 
     public static void validate(Response response) {
-        if (!VALID_STATUSES.contains(response.getStatus())) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(response.getStatus()), response.getStatusInfo().getReasonPhrase());
+        int status = response.getStatus();
+        String reasonPhrase = response.getStatusInfo().getReasonPhrase();
+        if (!VALID_STATUSES.contains(status)) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(status), reasonPhrase);
         }
     }
 }

@@ -6,8 +6,6 @@ import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.kafka.producer.NotificationProducer;
 import com.artsem.api.authservice.util.StatusCodeValidator;
 import jakarta.ws.rs.core.Response;
-import lombok.Cleanup;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
@@ -24,7 +22,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class KeycloakServiceImpl implements KeycloakService {
 
     private final UsersResource usersResource;
@@ -35,44 +32,64 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     private final NotificationProducer notificationProducer;
 
-    @Value("${app.keycloak.server-url}")
-    private String serverUrl;
+    private final String serverUrl;
 
-    @Value("${app.keycloak.user.client-id}")
-    private String userClientId;
+    private final String userClientId;
 
-    @Value("${app.keycloak.realm}")
-    private String realm;
+    private final String realm;
 
     /**
      * If the notification service is disabled, email notifications will not be sent.
      * This means users will not be able to confirm their actions through email verification.
      * To ensure functionality without email verification, new users will be marked as
-     * "email confirmed" by default (`true`) after registration.
-     * Similarly, email confirmation status will be set to `true` after password changes.
+     * "email confirmed" by default (true) after registration.
+     * Similarly, email confirmation status will be set to true after password changes.
      */
     // TODO: to be implemented
-    @Value("${taxi-api.notification-service.enabled}")
-    private boolean isNotificationServiceEnabled;
+    private final boolean isNotificationServiceEnabled;
+
+    public KeycloakServiceImpl(
+            UsersResource usersResource,
+            UserRepresentation userRepresentation,
+            CredentialRepresentation credentialRepresentation,
+            NotificationProducer notificationProducer,
+            @Value("${app.keycloak.server-url}") String serverUrl,
+            @Value("${app.keycloak.user.client-id}") String userClientId,
+            @Value("${app.keycloak.realm}") String realm,
+            @Value("${taxi-api.notification-service.enabled}") boolean isNotificationServiceEnabled
+    ) {
+        this.usersResource = usersResource;
+        this.userRepresentation = userRepresentation;
+        this.credentialRepresentation = credentialRepresentation;
+        this.notificationProducer = notificationProducer;
+        this.serverUrl = serverUrl;
+        this.userClientId = userClientId;
+        this.realm = realm;
+        this.isNotificationServiceEnabled = isNotificationServiceEnabled;
+    }
 
     public AccessTokenResponse getJwt(UserLoginRecord userLoginRecord) {
-        @Cleanup Keycloak userKeycloak = KeycloakBuilder.builder()
-                .serverUrl(serverUrl)
-                .realm(realm)
-                .grantType(OAuth2Constants.PASSWORD)
-                .clientId(userClientId)
-                .username(userLoginRecord.username())
-                .password(userLoginRecord.password())
-                .build();
-
-        return userKeycloak.tokenManager().getAccessToken();
+        try (
+                Keycloak userKeycloak = KeycloakBuilder.builder()
+                        .serverUrl(serverUrl)
+                        .realm(realm)
+                        .grantType(OAuth2Constants.PASSWORD)
+                        .clientId(userClientId)
+                        .username(userLoginRecord.username())
+                        .password(userLoginRecord.password())
+                        .build()
+        ) {
+            return userKeycloak.tokenManager().getAccessToken();
+        }
     }
+
 
     @Override
     public UserResource createUser(UserRegisterDto userRegisterDto) {
         setUserRepresentation(userRegisterDto);
-        @Cleanup Response response = usersResource.create(userRepresentation);
-        validateResponse(response);
+        try (Response response = usersResource.create(userRepresentation)) {
+            validateResponse(response);
+        }
         var createdUser = usersResource.search(userRegisterDto.getUsername()).get(0);
         sendVerificationEmail(createdUser.getId());
         return findUserById(createdUser.getId());
@@ -92,8 +109,9 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public void deleteUser(String userId) {
-        @Cleanup Response response = usersResource.delete(userId);
-        StatusCodeValidator.validate(response);
+        try (Response response = usersResource.delete(userId)) {
+            StatusCodeValidator.validate(response);
+        }
     }
 
     public void setUserRepresentation(UserRegisterDto userRegisterDto) {

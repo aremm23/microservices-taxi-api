@@ -4,6 +4,7 @@ import com.artsem.api.authservice.exception.KeycloakGroupNotFoundException;
 import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.util.KeycloakGroup;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.resource.GroupResource;
 import org.keycloak.admin.client.resource.GroupsResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -30,6 +31,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void deleteGroupFromUser(KeycloakGroup keycloakGroup, UserResource userResource) {
-        userResource.leaveGroup(groupsResource.group(keycloakGroup.getGroup()).toRepresentation().getId());
+        String groupId = keycloakGroup.getGroup();
+        GroupResource groupResource = groupsResource.group(groupId);
+        String groupRepresentationId = groupResource.toRepresentation().getId();
+        userResource.leaveGroup(groupRepresentationId);
     }
 }

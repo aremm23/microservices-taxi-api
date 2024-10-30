@@ -24,9 +24,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     @Override
     @SneakyThrows(VerificationException.class)
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        Collection<GrantedAuthority> authorities;
         AccessToken token = TokenVerifier.create(jwt.getTokenValue(), AccessToken.class).getToken();
-        authorities = token.getRealmAccess().getRoles().stream()
+        Collection<GrantedAuthority> authorities = token.getRealmAccess().getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
         return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim(JwtClaimNames.SUB));
