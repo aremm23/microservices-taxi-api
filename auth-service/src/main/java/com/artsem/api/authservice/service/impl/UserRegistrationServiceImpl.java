@@ -1,6 +1,8 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.exception.InvalidUserRoleException;
 import com.artsem.api.authservice.model.UserRegisterDto;
+import com.artsem.api.authservice.model.UserRole;
 import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.RoleService;
@@ -28,14 +30,25 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         return keycloakService.createUser(userRegisterDto);
     }
 
-    public void createPassenger(UserRegisterDto userRegisterDto) {
+    @Override
+    public void createUser(UserRegisterDto userRegisterDto) {
+        if (userRegisterDto.getUserRole() == UserRole.PASSENGER) {
+            createPassenger(userRegisterDto);
+        } else if (userRegisterDto.getUserRole() == UserRole.DRIVER) {
+            createDriver(userRegisterDto);
+        } else {
+            throw new InvalidUserRoleException("Invalid role provided");
+        }
+    }
+
+    private void createPassenger(UserRegisterDto userRegisterDto) {
         UserResource createdUser = registerUserInKeycloak(userRegisterDto);
         roleService.assignRole(KeycloakRole.PASSENGER, createdUser);
         groupService.assignGroupToUser(KeycloakGroup.PASSENGER, createdUser);
         rabbitSender.sendPassenger(userRegisterDto);
     }
 
-    public void createDriver(UserRegisterDto userRegisterDto) {
+    private void createDriver(UserRegisterDto userRegisterDto) {
         UserResource createdUser = registerUserInKeycloak(userRegisterDto);
         roleService.assignRole(KeycloakRole.DRIVER, createdUser);
         groupService.assignGroupToUser(KeycloakGroup.DRIVER, createdUser);

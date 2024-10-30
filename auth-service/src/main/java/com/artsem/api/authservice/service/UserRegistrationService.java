@@ -6,8 +6,6 @@ public interface UserRegistrationService {
 
     void createAdmin(UserRegisterDto userRegisterDto);
 
-    void createPassenger(UserRegisterDto userRegisterDto);
-
-    void createDriver(UserRegisterDto userRegisterDto);
+    void createUser(UserRegisterDto userRegisterDto);
 
 }
