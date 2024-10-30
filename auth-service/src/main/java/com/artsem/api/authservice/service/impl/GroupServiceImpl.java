@@ -1,5 +1,6 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.exception.KeycloakGroupNotFoundException;
 import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.util.KeycloakGroup;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,13 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void assignGroupToUser(KeycloakGroup keycloakGroup, UserResource userResource) {
         GroupRepresentation groupRepresentation = groupsResource.groups().stream()
-                .filter(groupRepresentation1 -> groupRepresentation1.getName().equals(keycloakGroup.getGroup()))
-                .findFirst().orElseThrow();
+                .filter(
+                        groupRepresentation1 -> groupRepresentation1.getName().equals(keycloakGroup.getGroup())
+                )
+                .findFirst()
+                .orElseThrow(
+                        () -> new KeycloakGroupNotFoundException("Group %s not found".formatted(keycloakGroup.getGroup()))
+                );
         userResource.joinGroup(groupRepresentation.getId());
     }
 
