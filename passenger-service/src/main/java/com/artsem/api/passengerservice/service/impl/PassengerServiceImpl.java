@@ -84,8 +84,8 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void checkIsPhoneOrEmailExist(PassengerRequestDto passengerDto) {
-        if (passengerRepository.existsByEmailOrPhone(passengerDto.getEmail(), passengerDto.getPhone())) {
-            throw new PassengerNotCreatedException("Passenger with such phone or email already exist.");
+        if (passengerRepository.existsByEmail(passengerDto.getEmail())) {
+            throw new PassengerNotCreatedException("Passenger with such email already exist.");
         }
     }
 
@@ -97,7 +97,6 @@ public class PassengerServiceImpl implements PassengerService {
 
     private void updateFields(PassengerRequestDto passengerDto, Passenger passenger) {
         Optional.ofNullable(passengerDto.getEmail()).ifPresent(passenger::setEmail);
-        Optional.ofNullable(passengerDto.getPhone()).ifPresent(passenger::setPhone);
         Optional.ofNullable(passengerDto.getFirstname()).ifPresent(passenger::setFirstname);
         Optional.ofNullable(passengerDto.getSurname()).ifPresent(passenger::setSurname);
     }

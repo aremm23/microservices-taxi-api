@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class PassengerResponseDto {
     private Long id;
     private String email;
-    private String phone;
     private String firstname;
     private String surname;
 }

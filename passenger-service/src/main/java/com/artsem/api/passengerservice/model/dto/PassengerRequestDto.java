@@ -3,7 +3,6 @@ package com.artsem.api.passengerservice.model.dto;
 import com.artsem.api.passengerservice.model.Passenger;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +18,6 @@ public class PassengerRequestDto {
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email must not be blank")
     private String email;
-
-    @NotBlank(message = "Phone number must not be blank")
-    @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Invalid phone number format")
-    private String phone;
 
     @NotBlank(message = "First name must not be blank")
     @Size(max = 50, message = "First name must not exceed 50 characters")

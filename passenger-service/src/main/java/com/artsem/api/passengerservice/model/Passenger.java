@@ -26,9 +26,6 @@ public class Passenger {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "phone", unique = true, nullable = false)
-    private String phone;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
