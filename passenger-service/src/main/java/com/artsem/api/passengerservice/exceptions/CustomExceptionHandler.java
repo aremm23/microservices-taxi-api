@@ -18,6 +18,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler({
             PassengerNotCreatedException.class,
             PassengerNotFoundedException.class,
+            PassengerNotUpdatedException.class,
             IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
