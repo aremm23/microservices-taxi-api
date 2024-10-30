@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
 public class CustomExceptionHandler {
 
     @ExceptionHandler({
-            ResponseStatusException.class
+            ResponseStatusException.class,
+            InvalidUserRoleException.class,
+            KeycloakGroupNotFoundException.class
     })
     private ResponseEntity<ErrorResponse> handlerException(ResponseStatusException e) {
         ErrorResponse errorResponse = new ErrorResponse(
