@@ -5,7 +5,7 @@ import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.RoleService;
 import com.artsem.api.authservice.service.UserRegistrationService;
-import com.artsem.api.authservice.service.rabbit.RabbitSenderImpl;
+import com.artsem.api.authservice.service.rabbit.RabbitSender;
 import com.artsem.api.authservice.util.KeycloakGroup;
 import com.artsem.api.authservice.util.KeycloakRole;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
     private final GroupService groupService;
 
-    private final RabbitSenderImpl rabbitSender;
+    private final RabbitSender rabbitSender;
 
     private UserResource registerUserInKeycloak(UserRegisterDto userRegisterDto) {
         return keycloakService.createUser(userRegisterDto);

@@ -5,29 +5,24 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * RabbitSenderImpl is responsible for sending messages related to user registration
+ * RabbitSender is responsible for sending messages related to user registration
  * via RabbitMQ. This class will handle sending messages for different types of users.
- *
- * Currently, this class is a placeholder and needs to be implemented.
  */
 @Service
-public class RabbitSenderImpl {
+public interface RabbitSender {
 
     /**
      * Sends a message specifically for passenger registration.
      *
      * @param userRegisterDto The record containing passenger registration details.
      */
-    public void sendPassenger(UserRegisterDto userRegisterDto) {
-        // TODO: Implement the logic to send a passenger registration message
-    }
+    void sendPassenger(UserRegisterDto userRegisterDto);
+
 
     /**
      * Sends a message specifically for driver registration.
      *
      * @param userRegisterDto The record containing driver registration details.
      */
-    public void sendDriver(UserRegisterDto userRegisterDto) {
-        // TODO: Implement the logic to send a driver registration message
-    }
+    void sendDriver(UserRegisterDto userRegisterDto);
 }
