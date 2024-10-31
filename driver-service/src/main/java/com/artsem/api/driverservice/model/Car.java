@@ -3,6 +3,8 @@ package com.artsem.api.driverservice.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -31,25 +33,15 @@ public class Car {
     @Column(name = "car_class")
     private CarClass carClass;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "car")
     private Driver driver;
-
-    @PrePersist
-    private void initializeTimestamps() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    @PreUpdate
-    private void updateTimestamp() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
 }
