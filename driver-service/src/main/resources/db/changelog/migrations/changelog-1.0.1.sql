@@ -12,5 +12,5 @@ create table public.car
     license_plate varchar   not null,
     car_class     varchar   not null,
     created_at    timestamp,
-    update_at     timestamp
+    updated_at     timestamp
 );
