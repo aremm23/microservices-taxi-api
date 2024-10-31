@@ -30,8 +30,8 @@ public class Car {
     private String licensePlate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "car_class")
-    private CarClass carClass;
+    @Column(name = "car_category")
+    private CarCategory carCategory;
 
     @CreationTimestamp
     @Column(name = "created_at")

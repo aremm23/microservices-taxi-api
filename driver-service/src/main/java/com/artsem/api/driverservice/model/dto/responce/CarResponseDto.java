@@ -1,7 +1,7 @@
 package com.artsem.api.driverservice.model.dto.responce;
 
 import com.artsem.api.driverservice.model.Car;
-import com.artsem.api.driverservice.model.CarClass;
+import com.artsem.api.driverservice.model.CarCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class CarResponseDto {
-    Long id;
-    String model;
-    String licensePlate;
-    CarClass carClass;
+    private Long id;
+    private String model;
+    private String licensePlate;
+    private CarCategory carCategory;
 }

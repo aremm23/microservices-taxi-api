@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class DriverAndCarResponseDto {
-    Long id;
-    String email;
-    String firstname;
-    String surname;
-    CarResponseDto car;
+    private Long id;
+    private String email;
+    private String firstname;
+    private String surname;
+    private CarResponseDto car;
 }

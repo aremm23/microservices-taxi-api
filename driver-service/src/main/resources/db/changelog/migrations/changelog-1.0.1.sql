@@ -10,7 +10,7 @@ create table public.car
             primary key,
     model         varchar   not null,
     license_plate varchar   not null,
-    car_class     varchar   not null,
+    car_category     varchar   not null,
     created_at    timestamp,
     updated_at     timestamp
 );

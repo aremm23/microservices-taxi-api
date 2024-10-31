@@ -1,7 +1,9 @@
 package com.artsem.api.driverservice.model.dto.request;
 
 import com.artsem.api.driverservice.model.Car;
-import com.artsem.api.driverservice.model.CarClass;
+import com.artsem.api.driverservice.model.CarCategory;
+import com.artsem.api.driverservice.util.PatternUtils;
+import com.artsem.api.driverservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,13 +18,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class CarRequestDto {
-    @NotBlank(message = "Model should not be blanked")
-    String model;
+    @NotBlank(message = ValidationKeys.MODEL_REQUIRED)
+    private String model;
 
-    @Pattern(message = "Only belarusian plate number valid", regexp = "^\\d{4}[A-Z]{2}-\\d{1}$")
-    @NotBlank(message = "Plate number should not be blanked")
-    String licensePlate;
+    @Pattern(message = ValidationKeys.INVALID_LICENSE_PLATE_FORMAT, regexp = PatternUtils.PLATE_NUMBER_PATTERN)
+    @NotBlank(message = ValidationKeys.LICENSE_PLATE_REQUIRED)
+    private String licensePlate;
 
-    @NotNull(message = "Car class should not be null")
-    CarClass carClass;
+    @NotNull(message = ValidationKeys.CAR_CATEGORY_REQUIRED)
+    private CarCategory carCategory;
 }

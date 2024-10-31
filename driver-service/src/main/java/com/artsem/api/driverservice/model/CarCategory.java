@@ -1,6 +1,6 @@
 package com.artsem.api.driverservice.model;
 
-public enum CarClass {
+public enum CarCategory {
     ECONOM,
     COMFORT,
     BUSINESS;
