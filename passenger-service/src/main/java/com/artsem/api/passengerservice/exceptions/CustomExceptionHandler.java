@@ -1,8 +1,13 @@
 package com.artsem.api.passengerservice.exceptions;
 
+import com.artsem.api.passengerservice.util.ValidationKeys;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,17 +18,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class CustomExceptionHandler {
+
+    private final MessageSource exceptionMessageSource;
+
+    private final MessageSource validationMessageSource;
 
     @ExceptionHandler({
             PassengerNotCreatedException.class,
-            PassengerNotFoundedException.class,
+            PassengerNotFoundException.class,
             PassengerNotUpdatedException.class,
-            IllegalArgumentException.class
+            PassengersNotFoundException.class,
+            EmptyIdsListException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
+        String message = exceptionMessageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
-                createErrorResponse(e.getMessage()),
+                createErrorResponse(message),
                 HttpStatus.BAD_REQUEST
         );
     }
@@ -32,7 +44,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         return new ResponseEntity<>(
-                createErrorResponse(parseValidationExceptionInfo(ex).toString()),
+                createErrorResponse(resolveValidationExceptionInfo(ex).toString()),
                 HttpStatus.BAD_REQUEST
         );
     }
@@ -44,14 +56,27 @@ public class CustomExceptionHandler {
         );
     }
 
-    private Map<String, String> parseValidationExceptionInfo(MethodArgumentNotValidException ex) {
+    private Map<String, String> resolveValidationExceptionInfo(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
+            String errorMessageKey = getValidationErrorMessageKey(error);
+            String errorMessage = validationMessageSource.getMessage(
+                    errorMessageKey,
+                    null,
+                    LocaleContextHolder.getLocale()
+            );
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    private String getValidationErrorMessageKey(ObjectError error) {
+        String errorMessageKey = error.getDefaultMessage();
+        if (errorMessageKey == null) {
+            errorMessageKey = ValidationKeys.UNKNOWN_MESSAGE;
+        }
+        return errorMessageKey;
     }
 
 }

@@ -1,6 +1,7 @@
-package com.artsem.api.passengerservice.model.dto;
+package com.artsem.api.passengerservice.model.dto.request;
 
 import com.artsem.api.passengerservice.model.Passenger;
+import com.artsem.api.passengerservice.util.ValidationKeys;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,15 +16,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PassengerRequestDto {
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email must not be blank")
+    @Email(message = ValidationKeys.INVALID_EMAIL_FORMAT)
+    @NotBlank(message = ValidationKeys.EMAIL_REQUIRED)
     private String email;
 
-    @NotBlank(message = "First name must not be blank")
-    @Size(max = 50, message = "First name must not exceed 50 characters")
+    @NotBlank(message = ValidationKeys.FIRSTNAME_REQUIRED)
+    @Size(max = 50, message = ValidationKeys.FIRSTNAME_MAX_SIZE)
     private String firstname;
 
-    @NotBlank(message = "Surname must not be blank")
-    @Size(max = 50, message = "Surname must not exceed 50 characters")
+    @NotBlank(message = ValidationKeys.SURNAME_REQUIRED)
+    @Size(max = 50, message = ValidationKeys.SURNAME_MAX_SIZE)
     private String surname;
 }
