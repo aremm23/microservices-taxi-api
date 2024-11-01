@@ -1,12 +1,10 @@
 package com.artsem.api.passengerservice.service.impl;
 
-import com.artsem.api.passengerservice.exceptions.PassengerNotCreatedException;
-import com.artsem.api.passengerservice.exceptions.PassengerNotFoundedException;
-import com.artsem.api.passengerservice.exceptions.PassengerNotUpdatedException;
+import com.artsem.api.passengerservice.exceptions.*;
 import com.artsem.api.passengerservice.model.Passenger;
-import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
-import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
-import com.artsem.api.passengerservice.model.dto.PassengerUpdateRequestDto;
+import com.artsem.api.passengerservice.model.dto.request.PassengerRequestDto;
+import com.artsem.api.passengerservice.model.dto.response.PassengerResponseDto;
+import com.artsem.api.passengerservice.model.dto.request.PassengerUpdateRequestDto;
 import com.artsem.api.passengerservice.repository.PassengerRepository;
 import com.artsem.api.passengerservice.service.PassengerService;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +62,7 @@ public class PassengerServiceImpl implements PassengerService {
         Long existingPassengerWithEmailId = passengerRepository.findIdByEmail(newEmail);
 
         if (existingPassengerWithEmailId != null && !existingPassengerWithEmailId.equals(id)) {
-            throw new PassengerNotUpdatedException("Such email already exists");
+            throw new PassengerNotUpdatedException();
         }
     }
 
@@ -72,7 +70,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public void delete(Long id) {
         if (!passengerRepository.existsById(id)) {
-            throw new PassengerNotFoundedException("Passenger with id %d not found".formatted(id));
+            throw new PassengerNotFoundException();
         }
         passengerRepository.deleteById(id);
     }
@@ -81,24 +79,24 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public void deleteMany(List<Long> ids) {
         if (ids.isEmpty()) {
-            throw new IllegalArgumentException("ID list cannot be empty");
+            throw new EmptyIdsListException();
         }
         List<Passenger> passengers = passengerRepository.findAllById(ids);
         if (passengers.size() != ids.size()) {
-            throw new PassengerNotFoundedException("Some passengers not found for the provided IDs");
+            throw new PassengersNotFoundException();
         }
         passengerRepository.deleteAll(passengers);
     }
 
     private void checkIsEmailExist(PassengerRequestDto passengerDto) {
         if (passengerRepository.existsByEmail(passengerDto.getEmail())) {
-            throw new PassengerNotCreatedException("Passenger with such email already exist.");
+            throw new PassengerNotCreatedException();
         }
     }
 
     private Passenger findPassengerById(Long id) {
         return passengerRepository.findById(id).orElseThrow(
-                () -> new PassengerNotFoundedException("Passenger with id %d not found".formatted(id))
+                PassengerNotFoundException::new
         );
     }
 

@@ -1,8 +1,8 @@
 package com.artsem.api.passengerservice.controller;
 
-import com.artsem.api.passengerservice.model.dto.PassengerRequestDto;
-import com.artsem.api.passengerservice.model.dto.PassengerResponseDto;
-import com.artsem.api.passengerservice.model.dto.PassengerUpdateRequestDto;
+import com.artsem.api.passengerservice.model.dto.request.PassengerRequestDto;
+import com.artsem.api.passengerservice.model.dto.response.PassengerResponseDto;
+import com.artsem.api.passengerservice.model.dto.request.PassengerUpdateRequestDto;
 import com.artsem.api.passengerservice.service.PassengerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

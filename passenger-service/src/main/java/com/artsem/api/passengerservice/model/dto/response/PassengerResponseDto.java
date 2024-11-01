@@ -1,4 +1,4 @@
-package com.artsem.api.passengerservice.model.dto;
+package com.artsem.api.passengerservice.model.dto.response;
 
 import com.artsem.api.passengerservice.model.Passenger;
 import lombok.AllArgsConstructor;
