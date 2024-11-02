@@ -5,6 +5,7 @@ import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.responce.CarResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import com.artsem.api.driverservice.repository.CarRepository;
 import com.artsem.api.driverservice.service.CarService;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +44,12 @@ public class CarServiceImpl implements CarService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CarResponseDto> getMany(List<Long> ids) {
+    public ListResponseDto<CarResponseDto> getMany(List<Long> ids) {
         List<Car> cars = carRepository.findAllById(ids);
-        return cars.stream()
+        List<CarResponseDto> dtosList = cars.stream()
                 .map(car -> mapper.map(car, CarResponseDto.class))
                 .toList();
+        return new ListResponseDto<>(dtosList.size(), dtosList);
     }
 
     @Transactional

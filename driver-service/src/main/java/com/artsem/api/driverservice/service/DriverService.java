@@ -7,6 +7,7 @@ import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestD
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
 import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,7 +19,7 @@ public interface DriverService {
 
     DriverResponseDto getOne(Long id);
 
-    List<DriverResponseDto> getMany(List<Long> ids);
+    ListResponseDto<DriverResponseDto> getMany(List<Long> ids);
 
     DriverResponseDto create(DriverRequestDto Driver);
 

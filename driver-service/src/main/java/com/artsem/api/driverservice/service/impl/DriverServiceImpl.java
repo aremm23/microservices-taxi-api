@@ -8,6 +8,7 @@ import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestD
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
 import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import com.artsem.api.driverservice.repository.CarRepository;
 import com.artsem.api.driverservice.repository.DriverRepository;
 import com.artsem.api.driverservice.service.DriverService;
@@ -49,11 +50,12 @@ public class DriverServiceImpl implements DriverService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<DriverResponseDto> getMany(List<Long> ids) {
+    public ListResponseDto<DriverResponseDto> getMany(List<Long> ids) {
         List<Driver> drivers = driverRepository.findAllById(ids);
-        return drivers.stream()
+        List<DriverResponseDto> dtosList = drivers.stream()
                 .map(driver -> mapper.map(driver, DriverResponseDto.class))
                 .toList();
+        return new ListResponseDto<>(dtosList.size(), dtosList);
     }
 
     @Transactional(readOnly = true)

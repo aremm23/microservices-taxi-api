@@ -5,6 +5,7 @@ import com.artsem.api.driverservice.filter.CarFilter;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.responce.CarResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,7 @@ public interface CarService {
 
     CarResponseDto getOne(Long id);
 
-    List<CarResponseDto> getMany(List<Long> ids);
+    ListResponseDto<CarResponseDto> getMany(List<Long> ids);
 
     CarResponseDto create(CarRequestDto Car);
 
