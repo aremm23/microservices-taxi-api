@@ -1,5 +1,6 @@
 package com.artsem.api.driverservice.service.impl;
 
+import com.artsem.api.driverservice.filter.DriverFilter;
 import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.Driver;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
@@ -12,6 +13,9 @@ import com.artsem.api.driverservice.repository.DriverRepository;
 import com.artsem.api.driverservice.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,14 @@ public class DriverServiceImpl implements DriverService {
     private final CarRepository carRepository;
 
     private final ModelMapper mapper;
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<DriverResponseDto> getList(DriverFilter filter, Pageable pageable) {
+        Specification<Driver> spec = filter.toSpecification();
+        Page<Driver> drivers = driverRepository.findAll(spec, pageable);
+        return drivers.map(driver -> mapper.map(driver, DriverResponseDto.class));
+    }
 
     @Transactional(readOnly = true)
     @Override

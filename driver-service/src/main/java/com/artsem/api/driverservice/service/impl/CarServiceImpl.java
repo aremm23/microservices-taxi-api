@@ -1,5 +1,6 @@
 package com.artsem.api.driverservice.service.impl;
 
+import com.artsem.api.driverservice.filter.CarFilter;
 import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
@@ -8,6 +9,9 @@ import com.artsem.api.driverservice.repository.CarRepository;
 import com.artsem.api.driverservice.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,14 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
 
     private final ModelMapper mapper;
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<CarResponseDto> getList(CarFilter filter, Pageable pageable) {
+        Specification<Car> spec = filter.toSpecification();
+        Page<Car> cars = carRepository.findAll(spec, pageable);
+        return cars.map(car -> mapper.map(car, CarResponseDto.class));
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -59,7 +71,6 @@ public class CarServiceImpl implements CarService {
 
     private void checkExistingLicensePlate(Long id, String newLicensePlate) {
         Long existingCarWithLicensePlateId = carRepository.findIdByLicensePlate(newLicensePlate);
-
         if (existingCarWithLicensePlateId != null && !existingCarWithLicensePlateId.equals(id)) {
             throw new RuntimeException("Such license plate number already exists");
         }
