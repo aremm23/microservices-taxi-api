@@ -6,6 +6,7 @@ import com.artsem.api.driverservice.util.PatternUtils;
 import com.artsem.api.driverservice.util.ValidationKeys;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class CarUpdateRequestDto {
     private String model;
 

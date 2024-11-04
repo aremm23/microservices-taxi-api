@@ -6,7 +6,8 @@ import org.springframework.util.StringUtils;
 
 public record DriverFilter(String surnameLike, Boolean isFree) {
     public Specification<Driver> toSpecification() {
-        return Specification.where(surnameLikeSpec()).and(isFreeSpec());
+        return Specification.where(surnameLikeSpec())
+                .and(isFreeSpec());
     }
 
     private Specification<Driver> surnameLikeSpec() {

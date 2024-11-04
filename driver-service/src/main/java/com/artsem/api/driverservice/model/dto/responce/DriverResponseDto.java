@@ -2,6 +2,7 @@ package com.artsem.api.driverservice.model.dto.responce;
 
 import com.artsem.api.driverservice.model.Driver;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class DriverResponseDto {
     private Long id;
     private String email;

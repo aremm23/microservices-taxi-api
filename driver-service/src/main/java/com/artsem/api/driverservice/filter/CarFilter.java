@@ -6,7 +6,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 public record CarFilter(String modelLike, CarCategory carCategory) {
     public Specification<Car> toSpecification() {
-        return Specification.where(modelLikeSpec()).and(carCategorySpec());
+        return Specification.where(modelLikeSpec())
+                .and(carCategorySpec());
     }
 
     private Specification<Car> modelLikeSpec() {
