@@ -14,6 +14,8 @@ create table public.driver
     firstname varchar,
     surname   varchar,
     is_free   boolean   not null,
+    created_at    timestamp,
+    updated_at     timestamp,
     car_id    bigint
         constraint driver_car_id_fk
             references public.car

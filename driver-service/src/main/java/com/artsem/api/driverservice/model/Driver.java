@@ -33,7 +33,7 @@ public class Driver {
     private String surname;
 
     @Column(name = "is_free")
-    private Boolean isFree;
+    private Boolean isFree = true;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -43,7 +43,7 @@ public class Driver {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private Car car;
 

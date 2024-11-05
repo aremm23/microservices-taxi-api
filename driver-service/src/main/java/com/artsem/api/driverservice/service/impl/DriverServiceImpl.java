@@ -1,5 +1,11 @@
 package com.artsem.api.driverservice.service.impl;
 
+import com.artsem.api.driverservice.exceptions.EmptyIdsListException;
+import com.artsem.api.driverservice.exceptions.car.CarNotFoundException;
+import com.artsem.api.driverservice.exceptions.driver.DriverNotCreatedException;
+import com.artsem.api.driverservice.exceptions.driver.DriverNotFoundException;
+import com.artsem.api.driverservice.exceptions.driver.DriverNotUpdatedException;
+import com.artsem.api.driverservice.exceptions.driver.DriversNotFoundException;
 import com.artsem.api.driverservice.filter.DriverFilter;
 import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.Driver;
@@ -91,7 +97,7 @@ public class DriverServiceImpl implements DriverService {
         Long existingDriverWithEmailId = driverRepository.findIdByEmail(newEmail);
 
         if (existingDriverWithEmailId != null && !existingDriverWithEmailId.equals(id)) {
-            throw new RuntimeException("Such email already exists");
+            throw new DriverNotUpdatedException();
         }
     }
 
@@ -99,7 +105,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void delete(Long id) {
         if (!driverRepository.existsById(id)) {
-            throw new RuntimeException("Driver with id %d not found".formatted(id));
+            throw new DriverNotFoundException();
         }
         driverRepository.deleteById(id);
     }
@@ -108,11 +114,11 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void deleteMany(List<Long> ids) {
         if (ids.isEmpty()) {
-            throw new IllegalArgumentException("ID list cannot be empty");
+            throw new EmptyIdsListException();
         }
         List<Driver> drivers = driverRepository.findAllById(ids);
         if (drivers.size() != ids.size()) {
-            throw new RuntimeException("Some drivers not found for the provided IDs");
+            throw new DriversNotFoundException();
         }
         driverRepository.deleteAll(drivers);
     }
@@ -131,10 +137,10 @@ public class DriverServiceImpl implements DriverService {
     public DriverAndCarResponseDto assignCarToDriver(Long driverId, Long carId) {
         Driver driver = findDriverById(driverId);
         if (driver.getCar() != null) {
-            throw new RuntimeException("Driver already has a car assigned");
+            throw new DriverNotUpdatedException();
         }
         Car car = carRepository.findById(carId)
-                .orElseThrow(() -> new RuntimeException("Car not found"));
+                .orElseThrow(CarNotFoundException::new);
         driver.setCar(car);
         Driver updatedDriver = driverRepository.save(driver);
         return mapper.map(updatedDriver, DriverAndCarResponseDto.class);
@@ -145,7 +151,7 @@ public class DriverServiceImpl implements DriverService {
     public DriverAndCarResponseDto removeCarFromDriver(Long driverId) {
         Driver driver = findDriverById(driverId);
         if (driver.getCar() == null) {
-            throw new RuntimeException("Driver does not have a car assigned");
+            throw new CarNotFoundException();
         }
         driver.setCar(null);
         Driver updatedDriver = driverRepository.save(driver);
@@ -154,13 +160,13 @@ public class DriverServiceImpl implements DriverService {
 
     private void checkIsEmailExist(DriverRequestDto driverDto) {
         if (driverRepository.existsByEmail(driverDto.getEmail())) {
-            throw new RuntimeException("Driver with such email already exist.");
+            throw new DriverNotCreatedException();
         }
     }
 
     private Driver findDriverById(Long id) {
         return driverRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Driver with id %d not found".formatted(id))
+                DriverNotFoundException::new
         );
     }
 
