@@ -49,7 +49,10 @@ public class CarServiceImpl implements CarService {
         List<CarResponseDto> dtosList = cars.stream()
                 .map(car -> mapper.map(car, CarResponseDto.class))
                 .toList();
-        return new ListResponseDto<>(dtosList.size(), dtosList);
+        return ListResponseDto.<CarResponseDto>builder()
+                .size(dtosList.size())
+                .list(dtosList)
+                .build();
     }
 
     @Transactional

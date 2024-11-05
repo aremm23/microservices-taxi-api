@@ -55,7 +55,10 @@ public class DriverServiceImpl implements DriverService {
         List<DriverResponseDto> dtosList = drivers.stream()
                 .map(driver -> mapper.map(driver, DriverResponseDto.class))
                 .toList();
-        return new ListResponseDto<>(dtosList.size(), dtosList);
+        return ListResponseDto.<DriverResponseDto>builder()
+                .size(dtosList.size())
+                .list(dtosList)
+                .build();
     }
 
     @Transactional(readOnly = true)
