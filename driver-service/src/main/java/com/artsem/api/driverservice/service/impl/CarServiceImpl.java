@@ -1,5 +1,9 @@
 package com.artsem.api.driverservice.service.impl;
 
+import com.artsem.api.driverservice.exceptions.EmptyIdsListException;
+import com.artsem.api.driverservice.exceptions.car.CarNotFoundException;
+import com.artsem.api.driverservice.exceptions.car.CarsNotFoundException;
+import com.artsem.api.driverservice.exceptions.car.ExistingLicensePlateException;
 import com.artsem.api.driverservice.filter.CarFilter;
 import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
@@ -77,7 +81,7 @@ public class CarServiceImpl implements CarService {
     private void checkExistingLicensePlate(Long id, String newLicensePlate) {
         Long existingCarWithLicensePlateId = carRepository.findIdByLicensePlate(newLicensePlate);
         if (existingCarWithLicensePlateId != null && !existingCarWithLicensePlateId.equals(id)) {
-            throw new RuntimeException("Such license plate number already exists");
+            throw new ExistingLicensePlateException();
         }
     }
 
@@ -85,7 +89,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public void delete(Long id) {
         if (!carRepository.existsById(id)) {
-            throw new RuntimeException("Car with id %d not found".formatted(id));
+            throw new CarNotFoundException();
         }
         carRepository.deleteById(id);
     }
@@ -94,24 +98,24 @@ public class CarServiceImpl implements CarService {
     @Override
     public void deleteMany(List<Long> ids) {
         if (ids.isEmpty()) {
-            throw new IllegalArgumentException("ID list cannot be empty");
+            throw new EmptyIdsListException();
         }
         List<Car> cars = carRepository.findAllById(ids);
         if (cars.size() != ids.size()) {
-            throw new RuntimeException("Some cars not found for the provided IDs");
+            throw new CarsNotFoundException();
         }
         carRepository.deleteAll(cars);
     }
 
     private void checkIsLicensePlateExist(CarRequestDto carDto) {
         if (carRepository.existsByLicensePlate(carDto.getLicensePlate())) {
-            throw new RuntimeException("Car with such license plate number already exist.");
+            throw new ExistingLicensePlateException();
         }
     }
 
     private Car findCarById(Long id) {
         return carRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Car with id %d not found".formatted(id))
+                CarNotFoundException::new
         );
     }
 
