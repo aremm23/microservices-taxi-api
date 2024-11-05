@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,7 +86,7 @@ public class DriverController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<DriverResponseDto> updateDriverStatus(
             @PathVariable Long id,
             @RequestBody DriverStatusUpdateRequestDto statusUpdateDto
@@ -96,7 +95,7 @@ public class DriverController {
         return ResponseEntity.ok(updatedDriver);
     }
 
-    @PostMapping("/{driverId}/car/{carId}")
+    @PatchMapping("/{driverId}/car/{carId}")
     public ResponseEntity<DriverAndCarResponseDto> assignCarToDriver(
             @PathVariable Long driverId,
             @PathVariable Long carId) {
