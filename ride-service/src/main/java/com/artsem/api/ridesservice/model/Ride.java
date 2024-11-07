@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,9 +29,9 @@ public class Ride {
     private String carLicensePlate;
 
     private Double distance;
-    private Double price;
-    private RideTariff tariff;
-    private PaymentMethod paymentMethod;
+    private BigDecimal price;
+    private RideTariff tariffId;
+    private PaymentMethod paymentMethodId;
 
     private LocalDateTime requestTime;
     private LocalDateTime acceptedTime;
@@ -38,5 +39,5 @@ public class Ride {
     private LocalDateTime endTime;
     private LocalDateTime cancelTime;
 
-    private RideStatus status;
+    private RideStatus statusId;
 }
