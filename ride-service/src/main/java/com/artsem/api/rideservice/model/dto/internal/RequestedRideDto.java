@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto;
+package com.artsem.api.rideservice.model.dto.internal;
 
 import com.artsem.api.rideservice.model.PaymentMethod;
 import com.artsem.api.rideservice.model.RideTariff;

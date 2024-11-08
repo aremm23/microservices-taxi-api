@@ -1,6 +1,6 @@
 package com.artsem.api.rideservice.service;
 
-import com.artsem.api.rideservice.model.RideCalculatePriceInfo;
+import com.artsem.api.rideservice.model.util.RideCalculatePriceInfo;
 import com.artsem.api.rideservice.model.RideTariff;
 import org.springframework.stereotype.Service;
 

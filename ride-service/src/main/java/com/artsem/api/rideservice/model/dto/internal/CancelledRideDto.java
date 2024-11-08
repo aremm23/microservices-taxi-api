@@ -1,6 +1,6 @@
-package com.artsem.api.rideservice.model.dto;
+package com.artsem.api.rideservice.model.dto.internal;
 
-import com.artsem.api.rideservice.model.UserRole;
+import com.artsem.api.rideservice.model.util.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

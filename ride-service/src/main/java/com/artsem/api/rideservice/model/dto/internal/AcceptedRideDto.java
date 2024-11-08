@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto;
+package com.artsem.api.rideservice.model.dto.internal;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

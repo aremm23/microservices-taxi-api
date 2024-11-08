@@ -1,4 +1,6 @@
-package com.artsem.api.rideservice.model;
+package com.artsem.api.rideservice.model.util;
+
+import com.artsem.api.rideservice.model.RideTariff;
 
 public record RideCalculatePriceInfo(
         int distanceValue,

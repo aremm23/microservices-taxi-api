@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model;
+package com.artsem.api.rideservice.model.util;
 
 import lombok.Data;
 

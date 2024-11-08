@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto.response;
+package com.artsem.api.rideservice.model.dto.rest.request;
 
 import com.artsem.api.rideservice.model.PaymentMethod;
 import com.artsem.api.rideservice.model.RideStatus;
@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class RideResponseDto {
-    private String id;
+public class RideRequestDto {
     private Long passengerId;
     private String pickUpLocation;
     private String dropOffLocation;
