@@ -1,4 +1,4 @@
-package com.artsem.api.ridesservice;
+package com.artsem.api.rideservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
