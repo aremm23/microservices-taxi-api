@@ -1,5 +1,6 @@
 package com.artsem.api.authservice.service;
 
+import com.artsem.api.authservice.model.UserIdsMessage;
 import com.artsem.api.authservice.model.UserLoginRecord;
 import com.artsem.api.authservice.model.UserRegisterDto;
 import org.keycloak.admin.client.resource.UserResource;
@@ -12,6 +13,8 @@ public interface KeycloakService {
     AccessTokenResponse getJwt(UserLoginRecord userLoginRecord);
 
     void sendVerificationEmail(String userId);
+
+    void setUserSequenceId(UserIdsMessage userIdsMessage);
 
     UserResource findUserById(String userId);
 

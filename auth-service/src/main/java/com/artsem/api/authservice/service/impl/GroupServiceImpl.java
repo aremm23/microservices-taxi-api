@@ -24,7 +24,7 @@ public class GroupServiceImpl implements GroupService {
                 )
                 .findFirst()
                 .orElseThrow(
-                        () -> new KeycloakGroupNotFoundException("Group %s not found".formatted(keycloakGroup.getGroup()))
+                        KeycloakGroupNotFoundException::new
                 );
         userResource.joinGroup(groupRepresentation.getId());
     }
