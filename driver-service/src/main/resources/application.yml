@@ -1,5 +1,6 @@
 server:
   port: 8083
+
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_URI:localhost:5432}/driver_service_db
@@ -13,3 +14,11 @@ spring:
         format_sql: true
   application:
     name: driver-service
+
+springdoc:
+  api-docs:
+    path: /driver-service-docs/v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /driver-service-docs/swagger-ui
+    enabled: true
