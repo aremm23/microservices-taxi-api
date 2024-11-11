@@ -46,7 +46,10 @@ public class RideDistanceServiceImpl implements RideDistanceService {
     }
 
     private void validateElement(DistanceMatrixResponse.Element element) {
-        if (!OK_STATUS.equals(element.getStatus()) || element.getDistance() == null || element.getDuration() == null) {
+        if (
+                !OK_STATUS.equals(element.getStatus())
+                        || element.getDistance() == null
+                        || element.getDuration() == null) {
             throw new InvalidResponseElementException();
         }
     }

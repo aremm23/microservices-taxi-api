@@ -90,11 +90,14 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
             return RideStatus.CANCELLED_BY_DRIVER.getId();
         } else if (userRole.equals(UserRole.PASSENGER)) {
             return RideStatus.CANCELLED_BY_PASSENGER.getId();
-        } else throw new IllegalArgumentException("Invalid user role");
+        } else {
+            throw new IllegalArgumentException("Invalid user role");
+        }
     }
 
     private Ride findRideOrThrow(String rideId) {
-        return rideRepository.findById(rideId).orElseThrow(RideNotFoundException::new);
+        return rideRepository.findById(rideId)
+                .orElseThrow(RideNotFoundException::new);
     }
 
     private void validateRideStatus(int rideStatus, int expectedStatus, String message) {
