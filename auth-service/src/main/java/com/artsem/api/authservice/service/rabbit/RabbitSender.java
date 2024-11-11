@@ -1,6 +1,6 @@
 package com.artsem.api.authservice.service.rabbit;
 
-import com.artsem.api.authservice.model.UserRegisterDto;
+import com.artsem.api.authservice.model.UserCreateMessage;
 
 
 /**
@@ -12,15 +12,15 @@ public interface RabbitSender {
     /**
      * Sends a message specifically for passenger registration.
      *
-     * @param userRegisterDto The record containing passenger registration details.
+     * @param userCreateMessage The record containing passenger registration details.
      */
-    void sendPassenger(UserRegisterDto userRegisterDto);
+    void sendPassenger(UserCreateMessage userCreateMessage);
 
 
     /**
      * Sends a message specifically for driver registration.
      *
-     * @param userRegisterDto The record containing driver registration details.
+     * @param userCreateMessage The record containing driver registration details.
      */
-    void sendDriver(UserRegisterDto userRegisterDto);
+    void sendDriver(UserCreateMessage userCreateMessage);
 }

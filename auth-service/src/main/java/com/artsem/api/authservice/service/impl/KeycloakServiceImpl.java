@@ -1,5 +1,6 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.model.UserIdsMessage;
 import com.artsem.api.authservice.model.UserLoginRecord;
 import com.artsem.api.authservice.model.UserRegisterDto;
 import com.artsem.api.authservice.service.KeycloakService;
@@ -18,11 +19,15 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class KeycloakServiceImpl implements KeycloakService {
+
+    public static final String USER_SEQUENCE_ID_ATTRIBUTE = "user_sequence_id";
 
     private final UsersResource usersResource;
 
@@ -93,6 +98,22 @@ public class KeycloakServiceImpl implements KeycloakService {
         var createdUser = usersResource.search(userRegisterDto.getUsername()).get(0);
         sendVerificationEmail(createdUser.getId());
         return findUserById(createdUser.getId());
+    }
+
+    public void setUserSequenceId(UserIdsMessage userIdsMessage) {
+        UserResource userResource = usersResource.get(userIdsMessage.userKeycloakId());
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        setUserAttribute(userIdsMessage.userSequenceId(), userRepresentation);
+        userResource.update(userRepresentation);
+    }
+
+    private void setUserAttribute(String id, UserRepresentation userRepresentation) {
+        Map<String, List<String>> attributes = userRepresentation.getAttributes();
+        if (attributes == null) {
+            attributes = new HashMap<>();
+        }
+        attributes.put(USER_SEQUENCE_ID_ATTRIBUTE, List.of(id));
+        userRepresentation.setAttributes(attributes);
     }
 
     private void validateResponse(Response response) {
