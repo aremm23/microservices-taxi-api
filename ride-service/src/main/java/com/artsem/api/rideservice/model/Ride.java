@@ -1,10 +1,10 @@
-package com.artsem.api.ridesservice.model;
+package com.artsem.api.rideservice.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Ride {
     @Id
     private String id;
@@ -30,14 +31,14 @@ public class Ride {
 
     private Double distance;
     private BigDecimal price;
-    private RideTariff tariffId;
-    private PaymentMethod paymentMethodId;
+    private Integer tariffId;
+    private Integer paymentMethodId;
 
-    private LocalDateTime requestTime;
+    private LocalDateTime requestedTime;
     private LocalDateTime acceptedTime;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private LocalDateTime cancelTime;
+    private LocalDateTime startedTime;
+    private LocalDateTime finishedTime;
+    private LocalDateTime canceledTime;
 
-    private RideStatus statusId;
+    private Integer statusId;
 }

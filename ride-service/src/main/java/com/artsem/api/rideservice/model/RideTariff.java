@@ -1,4 +1,4 @@
-package com.artsem.api.ridesservice.model;
+package com.artsem.api.rideservice.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

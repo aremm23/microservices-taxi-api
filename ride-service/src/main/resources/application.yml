@@ -1,10 +1,16 @@
+server:
+  port: 8084
+
 spring:
   application:
     name: ride-service
-
   data:
     mongodb:
       uri: mongodb://admin:password@localhost:27017/ride_db?authSource=admin
 
-server:
-  port: 8084
+gcp:
+  api:
+    maps:
+      key: ${MAPS_API_KEY}
+      url: https://maps.googleapis.com/maps/api/distancematrix/json
+      units: metric

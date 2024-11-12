@@ -1,4 +1,4 @@
-package com.artsem.api.ridesservice.model;
+package com.artsem.api.rideservice.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum RideStatus {
     REQUESTED(1),
     ACCEPTED(2),
-    IN_PROGRESS(3),
-    COMPLETED(4),
+    STARTED(3),
+    FINISHED(4),
     CANCELLED_BY_DRIVER(5),
     CANCELLED_BY_PASSENGER(6);
 
