@@ -1,3 +1,6 @@
+server:
+  port: 8082
+
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_URI:localhost:5432}/passenger_service_db
@@ -9,3 +12,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+springdoc:
+  api-docs:
+    path: /passenger-service-docs/v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /passenger-service-docs/swagger-ui
+    enabled: true
