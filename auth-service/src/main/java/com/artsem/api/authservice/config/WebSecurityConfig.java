@@ -24,6 +24,7 @@ public class WebSecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/auth-service-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oath2 -> oath2
                         .jwt(jwt -> jwt
