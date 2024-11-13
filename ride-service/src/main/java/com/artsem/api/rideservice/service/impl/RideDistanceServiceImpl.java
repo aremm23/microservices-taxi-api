@@ -7,6 +7,7 @@ import com.artsem.api.rideservice.model.util.DistanceAndDurationValues;
 import com.artsem.api.rideservice.model.util.DistanceMatrixResponse;
 import com.artsem.api.rideservice.service.RideDistanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,6 +24,7 @@ public class RideDistanceServiceImpl implements RideDistanceService {
     private final MapsApiProperties mapsApiProperties;
     private final RestTemplate restTemplate;
 
+    @Cacheable(value = "distanceAndDurationCache", key = "#pickUpLocation + ':' + #dropOffLocation")
     public DistanceAndDurationValues getDistanceAndDuration(String pickUpLocation, String dropOffLocation) {
         String url = buildUrl(pickUpLocation, dropOffLocation);
         DistanceMatrixResponse response = restTemplate.getForObject(url, DistanceMatrixResponse.class);
@@ -55,8 +57,11 @@ public class RideDistanceServiceImpl implements RideDistanceService {
     }
 
     private void validateResponse(DistanceMatrixResponse response) {
-        if (response == null || !OK_STATUS.equals(response.getStatus()) || response.getRows().isEmpty() ||
-                response.getRows().get(0).getElements().isEmpty()) {
+        if (
+                response == null
+                        || !OK_STATUS.equals(response.getStatus())
+                        || response.getRows().isEmpty()
+                        || response.getRows().get(0).getElements().isEmpty()) {
             throw new InvalidResponseException();
         }
     }
