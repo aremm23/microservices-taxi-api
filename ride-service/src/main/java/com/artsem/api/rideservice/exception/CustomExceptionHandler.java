@@ -26,7 +26,10 @@ public class CustomExceptionHandler {
     private final MessageSource validationMessageSource;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(RideNotFoundException.class)
+    @ExceptionHandler({
+            RideNotFoundException.class,
+            InvalidRideStatusException.class
+    })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
         String message = exceptionMessageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
