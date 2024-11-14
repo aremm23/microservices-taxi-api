@@ -19,3 +19,11 @@ gcp:
       key: ${MAPS_API_KEY}
       url: https://maps.googleapis.com/maps/api/distancematrix/json
       units: metric
+
+springdoc:
+  api-docs:
+    path: /ride-service-docs/v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /ride-service-docs/swagger-ui
+    enabled: true
