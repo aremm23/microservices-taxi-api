@@ -4,7 +4,7 @@ import com.artsem.api.reviewservice.model.Review;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-public record ReviewFilter(String rideIdLike, Long passengerIdLike, Long driverIdLike) {
+public record ReviewFilter(String rideIdLike, Long reviewedIdLike, Long reviewerIdLike) {
     public Specification<Review> toSpecification() {
         return Specification.where(rideIdLikeSpec())
                 .and(passengerIdLikeSpec())
@@ -22,8 +22,8 @@ public record ReviewFilter(String rideIdLike, Long passengerIdLike, Long driverI
 
     private Specification<Review> passengerIdLikeSpec() {
         return (root, query, cb) -> {
-            if (passengerIdLike != null) {
-                return cb.equal(root.get("passengerId"), passengerIdLike);
+            if (reviewedIdLike != null) {
+                return cb.equal(root.get("reviewedId"), reviewedIdLike);
             }
             return null;
         };
@@ -31,8 +31,8 @@ public record ReviewFilter(String rideIdLike, Long passengerIdLike, Long driverI
 
     private Specification<Review> driverIdLikeSpec() {
         return (root, query, cb) -> {
-            if (driverIdLike != null) {
-                return cb.equal(root.get("driverId"), driverIdLike);
+            if (reviewerIdLike != null) {
+                return cb.equal(root.get("reviewerId"), reviewerIdLike);
             }
             return null;
         };

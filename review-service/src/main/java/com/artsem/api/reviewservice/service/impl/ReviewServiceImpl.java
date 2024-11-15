@@ -64,7 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void delete(Long id) {
         if (!reviewRepository.existsById(id)) {
-            throw new RuntimeException();
+            throw new ReviewNotFoundException();
         }
         reviewRepository.deleteById(id);
     }
