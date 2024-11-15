@@ -10,7 +10,7 @@ public interface RideBasicService {
 
     Page<RideResponseDto> getList(RideFilter filter, Pageable pageable);
 
-    RideResponseDto getOne(String id);
+    RideResponseDto getById(String id);
 
     RideResponseDto create(RideRequestDto rideDto);
 

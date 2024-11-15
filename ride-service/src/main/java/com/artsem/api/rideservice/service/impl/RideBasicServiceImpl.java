@@ -39,7 +39,7 @@ public class RideBasicServiceImpl implements RideBasicService {
         return new PageImpl<>(rideDtos, pageable, total);
     }
 
-    public RideResponseDto getOne(String id) {
+    public RideResponseDto getById(String id) {
         Ride ride = findRideById(id);
         return mapper.map(ride, RideResponseDto.class);
     }

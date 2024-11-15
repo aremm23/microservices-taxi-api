@@ -27,3 +27,15 @@ springdoc:
   swagger-ui:
     path: /ride-service-docs/swagger-ui
     enabled: true
+
+openapi:
+  contact:
+    email: artsem.maiseyenka@gmail.com
+    name: Artsem Maiseyenka
+  service:
+    url: http://localhost:8084
+    description: Ride service
+  info:
+    title: Ride Service
+    version: 1.0
+    description: This API exposes endpoints to manage rides

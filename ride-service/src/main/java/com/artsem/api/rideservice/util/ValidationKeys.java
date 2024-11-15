@@ -1,8 +1,5 @@
 package com.artsem.api.rideservice.util;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class ValidationKeys {
     public static final String PASSENGER_ID_REQUIRED = "passenger-id-required";
     public static final String PICKUP_LOCATION_REQUIRED = "pickup-location-required";

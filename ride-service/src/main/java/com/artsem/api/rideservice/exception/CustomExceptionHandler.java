@@ -21,9 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomExceptionHandler {
 
-    private final MessageSource exceptionMessageSource;
-
-    private final MessageSource validationMessageSource;
+    private final MessageSource messageSource;
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
@@ -31,7 +29,7 @@ public class CustomExceptionHandler {
             InvalidRideStatusException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
-        String message = exceptionMessageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
                 createErrorResponse(message),
                 HttpStatus.BAD_REQUEST
@@ -59,7 +57,7 @@ public class CustomExceptionHandler {
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessageKey = getValidationErrorMessageKey(error);
-            String errorMessage = validationMessageSource.getMessage(
+            String errorMessage = messageSource.getMessage(
                     errorMessageKey,
                     null,
                     LocaleContextHolder.getLocale()

@@ -46,12 +46,12 @@ public class BasicRideController {
 
     @Operation(summary = "Get ride details by ID", description = "Retrieve detailed information about a specific ride")
     @GetMapping("/{id}")
-    public ResponseEntity<RideResponseDto> getOne(
+    public ResponseEntity<RideResponseDto> getById(
             @Parameter(description = "ID of the ride to retrieve")
             @PathVariable
             String id
     ) {
-        RideResponseDto ride = rideBasicService.getOne(id);
+        RideResponseDto ride = rideBasicService.getById(id);
         return ResponseEntity.ok(ride);
     }
 
@@ -64,7 +64,9 @@ public class BasicRideController {
             RideRequestDto rideDto
     ) {
         RideResponseDto createdRide = rideBasicService.create(rideDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdRide);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdRide);
     }
 
     @Operation(summary = "Delete a ride by ID", description = "Remove a ride from the system by its ID")
@@ -75,6 +77,8 @@ public class BasicRideController {
             String id
     ) {
         rideBasicService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }
