@@ -1,7 +1,10 @@
 package com.artsem.api.passengerservice.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -12,6 +15,9 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "passenger")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Passenger {
     @Id
     @SequenceGenerator(
