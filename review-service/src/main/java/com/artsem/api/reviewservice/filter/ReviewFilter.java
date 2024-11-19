@@ -7,8 +7,8 @@ import org.springframework.util.StringUtils;
 public record ReviewFilter(String rideIdLike, Long reviewedIdLike, Long reviewerIdLike) {
     public Specification<Review> toSpecification() {
         return Specification.where(rideIdLikeSpec())
-                .and(passengerIdLikeSpec())
-                .and(driverIdLikeSpec());
+                .and(equalSpecification("reviewedId", reviewedIdLike))
+                .and(equalSpecification("reviewerId", reviewerIdLike));
     }
 
     private Specification<Review> rideIdLikeSpec() {
@@ -20,19 +20,10 @@ public record ReviewFilter(String rideIdLike, Long reviewedIdLike, Long reviewer
         };
     }
 
-    private Specification<Review> passengerIdLikeSpec() {
+    private Specification<Review> equalSpecification(String fieldName, Long value) {
         return (root, query, cb) -> {
-            if (reviewedIdLike != null) {
-                return cb.equal(root.get("reviewedId"), reviewedIdLike);
-            }
-            return null;
-        };
-    }
-
-    private Specification<Review> driverIdLikeSpec() {
-        return (root, query, cb) -> {
-            if (reviewerIdLike != null) {
-                return cb.equal(root.get("reviewerId"), reviewerIdLike);
+            if (value != null) {
+                return cb.equal(root.get(fieldName), value);
             }
             return null;
         };
