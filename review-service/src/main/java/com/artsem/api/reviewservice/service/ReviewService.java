@@ -12,7 +12,7 @@ public interface ReviewService {
 
     Page<ReviewResponseDto> getList(ReviewFilter filter, Pageable pageable);
 
-    ReviewResponseDto getOne(Long id);
+    ReviewResponseDto getById(Long id);
 
     ReviewResponseDto create(ReviewRequestDto review);
 

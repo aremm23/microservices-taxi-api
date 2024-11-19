@@ -37,7 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Transactional(readOnly = true)
     @Override
-    public ReviewResponseDto getOne(Long id) {
+    public ReviewResponseDto getById(Long id) {
         Review review = findReviewById(id);
         return mapper.map(review, ReviewResponseDto.class);
     }
@@ -69,6 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.deleteById(id);
     }
 
+    @Transactional
     @Override
     public void deleteMany(List<Long> ids) {
         if (ids.isEmpty()) {

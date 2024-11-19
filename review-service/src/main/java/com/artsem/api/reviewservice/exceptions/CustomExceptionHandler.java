@@ -40,8 +40,9 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String validationExceptionInfoString = resolveValidationExceptionInfo(ex).toString();
         return new ResponseEntity<>(
-                createErrorResponse(resolveValidationExceptionInfo(ex).toString()),
+                createErrorResponse(validationExceptionInfoString),
                 HttpStatus.BAD_REQUEST
         );
     }
