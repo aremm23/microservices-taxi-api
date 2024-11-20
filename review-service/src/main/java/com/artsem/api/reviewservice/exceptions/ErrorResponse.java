@@ -1,6 +1,6 @@
 package com.artsem.api.reviewservice.exceptions;
 
-import com.artsem.api.reviewservice.util.PatternUtil;
+import com.artsem.api.reviewservice.util.PatternConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 public record ErrorResponse(
         String message,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PatternUtil.DATE_PATTERN)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = PatternConstants.DATE_PATTERN)
         LocalDateTime timestamp) {
 }
