@@ -32,8 +32,8 @@ public class CustomExceptionHandler {
             InvalidUserRoleException.class,
             KeycloakGroupNotFoundException.class,
             IllegalArgumentException.class,
-            ExpiredJwtException.class,
-            UserNotFoundException.class
+            UserNotFoundException.class,
+            ConfirmationTokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
         String message = exceptionMessageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());

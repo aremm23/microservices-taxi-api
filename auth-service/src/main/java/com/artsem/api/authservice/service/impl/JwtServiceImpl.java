@@ -1,5 +1,6 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.exception.ConfirmationTokenExpiredException;
 import com.artsem.api.authservice.service.JwtService;
 import com.artsem.api.authservice.util.ExceptionKeys;
 import io.jsonwebtoken.Claims;
@@ -34,9 +35,7 @@ public class JwtServiceImpl implements JwtService {
 
     public String generateEmailConfirmationToken(String email) {
         Date expirationDate = Date.from(Instant.now().plus(jwtExpireMin, ChronoUnit.MINUTES));
-
         Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-
         return Jwts.builder()
                 .setSubject(email)
                 .claim(CLAIM_TYPE, CLAIM_TYPE_VALUE)
@@ -47,22 +46,22 @@ public class JwtServiceImpl implements JwtService {
 
     private Claims validateAndGetClaims(String token) {
         Key key = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
-
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        validateClaims(claims);
+        return claims;
+    }
 
+    private void validateClaims(Claims claims) {
         if (!CLAIM_TYPE_VALUE.equals(claims.get(CLAIM_TYPE))) {
             throw new IllegalArgumentException(ExceptionKeys.INVALID_TOKEN_TYPE);
         }
-
         if (claims.getExpiration().before(new Date())) {
-            throw new IllegalArgumentException(ExceptionKeys.TOKEN_EXPIRED);
+            throw new ConfirmationTokenExpiredException();
         }
-
-        return claims;
     }
 
     public String getEmailFromToken(String token) {
