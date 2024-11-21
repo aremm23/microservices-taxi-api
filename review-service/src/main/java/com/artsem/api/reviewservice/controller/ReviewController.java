@@ -5,7 +5,6 @@ import com.artsem.api.reviewservice.filter.ReviewFilter;
 import com.artsem.api.reviewservice.model.dto.request.ReviewRequestDto;
 import com.artsem.api.reviewservice.model.dto.response.ReviewResponseDto;
 import com.artsem.api.reviewservice.service.ReviewService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Review Controller", description = "API for managing reviews in the review service")
 public class ReviewController implements ReviewApi {
 
     private final ReviewService reviewService;
