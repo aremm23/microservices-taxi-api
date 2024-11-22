@@ -23,7 +23,7 @@ public class StripeController {
     private final StripeService stripeService;
 
     @PostMapping("/refill-balance")
-    public ResponseEntity<StripeResponseDto> createPayment(@RequestBody RefillBalanceRequestDto refillBalanceRequestDto) {
+    public ResponseEntity<StripeResponseDto> createBalanceRefillPayment(@RequestBody RefillBalanceRequestDto refillBalanceRequestDto) {
         StripeResponseDto stripeResponseDto = stripeService.createPayment(
                 BigDecimal.valueOf(refillBalanceRequestDto.amount()),
                 refillBalanceRequestDto.balanceId()
@@ -32,7 +32,7 @@ public class StripeController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<CapturePaymentResponseDto> capturePayment(@RequestParam String sessionId) {
+    public ResponseEntity<CapturePaymentResponseDto> verify(@RequestParam String sessionId) {
         CapturePaymentResponseDto capturePaymentResponseDto = stripeService.capturePayment(sessionId);
         return ResponseEntity.ok(capturePaymentResponseDto);
     }
