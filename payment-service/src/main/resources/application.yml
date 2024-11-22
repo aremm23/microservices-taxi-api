@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: payment-service
+
+server:
+  port: 8086
+
+stripe:
+  secretKey: ${STRIPE_SECRET_KEY}
+  success-url: ${FRONTEND_SUCCESS_URL:https://localhost:8086/error}
+  cancel-url: ${FRONTEND_CANCEL_URL:https://localhost:8086/success}
+  webhook:
+    successSecretKey: ${WEBHOOK_SUCCESS_SECRET_KEY}
