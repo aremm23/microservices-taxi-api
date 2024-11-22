@@ -52,9 +52,9 @@ class PassengerControllerTest {
         ));
         when(passengerService.getList(any(PassengerFilter.class), any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/v1/passengers")
-                        .param("page", "0")
-                        .param("size", "2"))
+        mockMvc.perform(get(PassengerServiceImplTestUtil.PASSENGERS_BASE_URL)
+                        .param("page", PassengerServiceImplTestUtil.PAGE_NUMBER)
+                        .param("size", PassengerServiceImplTestUtil.PAGE_SIZE_2))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].id").value(1))
@@ -69,7 +69,7 @@ class PassengerControllerTest {
         PassengerResponseDto passengerResponseDto = PassengerServiceImplTestUtil.getFirstPassengerResponseDto();
         when(passengerService.getOne(1L)).thenReturn(passengerResponseDto);
 
-        mockMvc.perform(get("/api/v1/passengers/1"))
+        mockMvc.perform(get(PassengerServiceImplTestUtil.PASSENGER_BY_ID_URL, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.firstname").value(PassengerServiceImplTestUtil.FIRST_FIRSTNAME))
@@ -84,7 +84,7 @@ class PassengerControllerTest {
         PassengerResponseDto responseDto = PassengerServiceImplTestUtil.getFirstPassengerResponseDto();
         when(passengerService.create(any(PassengerRequestDto.class))).thenReturn(responseDto);
 
-        mockMvc.perform(post("/api/v1/passengers")
+        mockMvc.perform(post(PassengerServiceImplTestUtil.PASSENGERS_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
@@ -100,7 +100,7 @@ class PassengerControllerTest {
         PassengerResponseDto responseDto = PassengerServiceImplTestUtil.getFirstPassengerResponseDto();
         when(passengerService.patch(eq(1L), any(PassengerUpdateRequestDto.class))).thenReturn(responseDto);
 
-        mockMvc.perform(patch("/api/v1/passengers/1")
+        mockMvc.perform(patch(PassengerServiceImplTestUtil.PASSENGER_BY_ID_URL, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(updateRequestDto)))
                 .andExpect(status().isOk())
@@ -114,7 +114,7 @@ class PassengerControllerTest {
     void testDeletePassenger_Success() throws Exception {
         doNothing().when(passengerService).delete(1L);
 
-        mockMvc.perform(delete("/api/v1/passengers/1"))
+        mockMvc.perform(delete(PassengerServiceImplTestUtil.PASSENGER_BY_ID_URL, 1))
                 .andExpect(status().isNoContent());
 
         verify(passengerService, times(1)).delete(1L);
@@ -134,7 +134,7 @@ class PassengerControllerTest {
 
         when(passengerService.getMany(ids)).thenReturn(responseDtos);
 
-        mockMvc.perform(get("/api/v1/passengers/by-ids")
+        mockMvc.perform(get(PassengerServiceImplTestUtil.PASSENGER_BY_IDS_URL)
                         .param("ids", "1,2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size").value(2))
@@ -150,7 +150,7 @@ class PassengerControllerTest {
         List<Long> ids = List.of(1L, 2L);
         doNothing().when(passengerService).deleteMany(ids);
 
-        mockMvc.perform(delete("/api/v1/passengers")
+        mockMvc.perform(delete(PassengerServiceImplTestUtil.PASSENGERS_BASE_URL)
                         .param("ids", "1,2"))
                 .andExpect(status().isNoContent());
 

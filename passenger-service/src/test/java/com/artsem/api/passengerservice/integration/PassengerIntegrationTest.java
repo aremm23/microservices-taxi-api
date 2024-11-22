@@ -43,7 +43,7 @@ class PassengerIntegrationTest extends PostgresContainerConfig {
     @LocalServerPort
     private int port;
 
-    private final String baseUrl = "http://localhost:" + port + "/api/v1/passengers";
+    private final String baseUrl = "http://localhost:" + port + PassengerServiceImplTestUtil.PASSENGERS_BASE_URL;
 
     @SneakyThrows
     @Test
@@ -131,8 +131,8 @@ class PassengerIntegrationTest extends PostgresContainerConfig {
     @SneakyThrows
     @Test
     void testGetAllPassengersWithPaginationAndSorting() {
-        int page = 0;
-        int size = 5;
+        String page = PassengerServiceImplTestUtil.PAGE_NUMBER;
+        String size = PassengerServiceImplTestUtil.PAGE_SIZE_5;
         String sort = "email,asc";
 
         mockMvc.perform(get(baseUrl + "?page=" + page + "&size=" + size + "&sort=" + sort))

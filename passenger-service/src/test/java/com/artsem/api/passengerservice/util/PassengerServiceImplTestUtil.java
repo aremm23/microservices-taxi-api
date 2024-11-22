@@ -29,6 +29,12 @@ public class PassengerServiceImplTestUtil {
     public static final String THIRD_EMAIL = "ddd3@bb.com";
     public static final String THIRD_FIRSTNAME = "ddd3";
     public static final String THIRD_SURNAME = "ddd3";
+    public static final String PAGE_SIZE_2 = "2";
+    public static final String PAGE_NUMBER = "0";
+    public static final String PASSENGERS_BASE_URL = "/api/v1/passengers";
+    public static final String PASSENGER_BY_ID_URL = "/api/v1/passengers/{id}";
+    public static final String PASSENGER_BY_IDS_URL = "/api/v1/passengers/by-ids";
+    public static final String PAGE_SIZE_5 = "5";
 
     public static Passenger getFirstPassenger() {
         return Passenger.builder()
