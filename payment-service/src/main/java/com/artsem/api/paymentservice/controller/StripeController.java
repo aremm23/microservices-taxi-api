@@ -31,7 +31,7 @@ public class StripeController {
         return ResponseEntity.ok(stripeResponseDto);
     }
 
-    @GetMapping("/capture-payment")
+    @GetMapping("/verify")
     public ResponseEntity<CapturePaymentResponseDto> capturePayment(@RequestParam String sessionId) {
         CapturePaymentResponseDto capturePaymentResponseDto = stripeService.capturePayment(sessionId);
         return ResponseEntity.ok(capturePaymentResponseDto);
