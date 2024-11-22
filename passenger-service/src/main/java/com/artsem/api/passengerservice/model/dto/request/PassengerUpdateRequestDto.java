@@ -5,6 +5,7 @@ import com.artsem.api.passengerservice.util.ValidationKeys;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class PassengerUpdateRequestDto {
     @Email(message = ValidationKeys.INVALID_EMAIL_FORMAT)
     private String email;
