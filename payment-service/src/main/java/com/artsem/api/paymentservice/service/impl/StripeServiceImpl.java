@@ -1,7 +1,7 @@
 package com.artsem.api.paymentservice.service.impl;
 
-import com.artsem.api.paymentservice.model.dto.CapturePaymentResponseDto;
-import com.artsem.api.paymentservice.model.dto.StripeResponseDto;
+import com.artsem.api.paymentservice.model.dto.response.CapturePaymentResponseDto;
+import com.artsem.api.paymentservice.model.dto.response.StripeResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
 import com.artsem.api.paymentservice.service.StripeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class StripeServiceImpl implements StripeService {
@@ -145,7 +146,8 @@ public class StripeServiceImpl implements StripeService {
         if (CHECKOUT_SESSION_COMPLETED.equals(event.getType())) {
             Long balanceId = extractBalanceId(payload);
             BigDecimal amount = extractAmountTotal(payload);
-            balanceService.refillBalance(amount, balanceId);
+            BigDecimal finalAmount = amount.divide(BigDecimal.valueOf(COINS), RoundingMode.DOWN);
+            balanceService.refillBalance(finalAmount, balanceId);
         }
     }
 

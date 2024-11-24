@@ -1,8 +1,8 @@
 package com.artsem.api.paymentservice.controller;
 
-import com.artsem.api.paymentservice.model.dto.CapturePaymentResponseDto;
-import com.artsem.api.paymentservice.model.dto.RefillBalanceRequestDto;
-import com.artsem.api.paymentservice.model.dto.StripeResponseDto;
+import com.artsem.api.paymentservice.model.dto.response.CapturePaymentResponseDto;
+import com.artsem.api.paymentservice.model.dto.request.RefillBalanceRequestDto;
+import com.artsem.api.paymentservice.model.dto.response.StripeResponseDto;
 import com.artsem.api.paymentservice.service.StripeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

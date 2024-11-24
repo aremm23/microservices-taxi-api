@@ -1,4 +1,4 @@
-package com.artsem.api.paymentservice.model.dto;
+package com.artsem.api.paymentservice.model.dto.response;
 
 import lombok.Builder;
 

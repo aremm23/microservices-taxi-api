@@ -1,12 +1,10 @@
-package com.artsem.api.paymentservice.model.dto;
+package com.artsem.api.paymentservice.model.dto.request;
 
 import com.artsem.api.paymentservice.util.ValidationKeys;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-
-import java.math.BigDecimal;
 
 @Builder
 public record RefillBalanceRequestDto(
