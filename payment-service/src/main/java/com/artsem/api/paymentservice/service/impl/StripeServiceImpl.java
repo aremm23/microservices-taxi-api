@@ -64,7 +64,7 @@ public class StripeServiceImpl implements StripeService {
     }
 
     private void checkBalanceExist(Long balanceId) {
-        if(!balanceService.isBalanceExist(balanceId)) {
+        if (!balanceService.isBalanceExist(balanceId)) {
             throw new RuntimeException("Balance not found");//TODO custom exception
         }
     }
@@ -78,27 +78,39 @@ public class StripeServiceImpl implements StripeService {
     }
 
     private SessionCreateParams buildSessionCreateParams(BigDecimal amount, Long balanceId) {
-        SessionCreateParams.LineItem.PriceData.ProductData productData =
-                SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                        .setName(BALANCE_TOP_UP)
-                        .build();
-        SessionCreateParams.LineItem.PriceData priceData =
-                SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency(CURRENCY)
-                        .setUnitAmount(sumUnitAmount(amount))
-                        .setProductData(productData)
-                        .build();
-        SessionCreateParams.LineItem lineItem =
-                SessionCreateParams.LineItem.builder()
-                        .setQuantity(QUANTITY)
-                        .setPriceData(priceData)
-                        .build();
+        SessionCreateParams.LineItem.PriceData.ProductData productData = getProductData();
+        SessionCreateParams.LineItem.PriceData priceData = getPriceData(amount, productData);
+        SessionCreateParams.LineItem lineItem = getLineItem(priceData);
         return SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(successUrl)
                 .setCancelUrl(cancelUrl)
                 .addLineItem(lineItem)
                 .putMetadata(BALANCE_ID, balanceId.toString())
+                .build();
+    }
+
+    private SessionCreateParams.LineItem getLineItem(SessionCreateParams.LineItem.PriceData priceData) {
+        return SessionCreateParams.LineItem.builder()
+                .setQuantity(QUANTITY)
+                .setPriceData(priceData)
+                .build();
+    }
+
+    private SessionCreateParams.LineItem.PriceData getPriceData(
+            BigDecimal amount,
+            SessionCreateParams.LineItem.PriceData.ProductData productData
+    ) {
+        return SessionCreateParams.LineItem.PriceData.builder()
+                .setCurrency(CURRENCY)
+                .setUnitAmount(sumUnitAmount(amount))
+                .setProductData(productData)
+                .build();
+    }
+
+    private SessionCreateParams.LineItem.PriceData.ProductData getProductData() {
+        return SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                .setName(BALANCE_TOP_UP)
                 .build();
     }
 
