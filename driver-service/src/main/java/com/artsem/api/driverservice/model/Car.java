@@ -1,7 +1,10 @@
 package com.artsem.api.driverservice.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +15,9 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "car")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Car {
     @Id
     @SequenceGenerator(
