@@ -6,4 +6,5 @@ public class ValidationKeys {
     public static final String AMOUNT_MIN_VALUE = "amount-min-value";
     public static final String AMOUNT_REQUIRED = "amount-required";
     public static final String AMOUNT_MAX_VALUE = "amount-max-value";
+    public static final String USER_ID_REQUIRED = "user-id-required";
 }
