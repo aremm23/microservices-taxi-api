@@ -3,8 +3,8 @@ package com.artsem.api.paymentservice.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,12 +25,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Balance {
     @Id
-    @SequenceGenerator(
-            name = "balanceIdSeqGen",
-            sequenceName = "balance_id_seq",
-            allocationSize = 1
-    )
-    @GeneratedValue(generator = "balanceIdSeqGen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
