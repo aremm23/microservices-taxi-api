@@ -4,6 +4,7 @@ import com.artsem.api.paymentservice.model.dto.request.InitBalanceRequestDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class BalanceController {
             @RequestBody InitBalanceRequestDto initBalanceRequestDto
     ) {
         BalanceResponseDto savedBalance = balanceService.initBalance(initBalanceRequestDto.userId());
-        return ResponseEntity.ok(savedBalance);
+        return new ResponseEntity<>(savedBalance, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
