@@ -154,7 +154,6 @@ class CarServiceImplTest {
         List<Car> cars = CarServiceImplTestUtil.getCarList();
         List<CarResponseDto> expectedDtoList = CarServiceImplTestUtil.getCarResponseDtoList().list();
 
-        // Настройка репозитория и маппера
         when(carRepository.findAllById(carIds)).thenReturn(cars);
         when(mapper.map(any(Car.class), eq(CarResponseDto.class)))
                 .thenAnswer(invocation -> {
@@ -165,10 +164,8 @@ class CarServiceImplTest {
                             .orElse(null);
                 });
 
-        // Вызов метода getMany
         ListResponseDto<CarResponseDto> result = carService.getMany(carIds);
 
-        // Проверка результатов
         assertEquals(expectedDtoList.size(), result.size());
         assertEquals(expectedDtoList, result.list());
         verify(carRepository, times(1)).findAllById(carIds);
