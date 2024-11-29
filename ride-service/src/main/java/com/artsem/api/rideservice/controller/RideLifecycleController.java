@@ -22,14 +22,12 @@ public class RideLifecycleController {
 
     private final RideLifecycleService rideService;
 
-    @PreAuthorize("hasRole('PASSENGER')")
     @PostMapping("/request")
     public ResponseEntity<RideResponseDto> requestRide(@RequestBody RequestedRideRequestDto rideDto) {
         RideResponseDto savedRide = rideService.requestRide(rideDto);
         return ResponseEntity.ok(savedRide);
     }
 
-    @PreAuthorize("hasRole('PASSENGER')")
     @PatchMapping("/{id}/accept")
     public ResponseEntity<RideResponseDto> acceptRide(
             @PathVariable String id,
@@ -39,21 +37,18 @@ public class RideLifecycleController {
         return ResponseEntity.ok(savedRide);
     }
 
-    @PreAuthorize("hasRole('PASSENGER')")
     @PatchMapping("/{id}/start")
     public ResponseEntity<RideResponseDto> startRide(@PathVariable String id) {
         RideResponseDto savedRide = rideService.startRide(id);
         return ResponseEntity.ok(savedRide);
     }
 
-    @PreAuthorize("hasRole('PASSENGER')")
     @PatchMapping("/{id}/complete")
     public ResponseEntity<RideResponseDto> completeRide(@PathVariable String id) {
         RideResponseDto savedRide = rideService.finishRide(id);
         return ResponseEntity.ok(savedRide);
     }
 
-    @PreAuthorize("hasRole('PASSENGER')")
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<RideResponseDto> cancelRide(
             @PathVariable String id,

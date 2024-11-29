@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +28,6 @@ public class BasicRideController implements BasicRideControllerApi {
 
     private final RideBasicService rideBasicService;
 
-    @PreAuthorize("hasAnyRole('PASSENGER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<PagedModel<RideResponseDto>> getList(
             @ModelAttribute
@@ -40,7 +38,6 @@ public class BasicRideController implements BasicRideControllerApi {
         return ResponseEntity.ok(new PagedModel<>(rideResponseDtos));
     }
 
-    @PreAuthorize("hasAnyRole('PASSENGER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<RideResponseDto> getById(
             @PathVariable
@@ -50,7 +47,6 @@ public class BasicRideController implements BasicRideControllerApi {
         return ResponseEntity.ok(ride);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<RideResponseDto> create(
             @Valid
@@ -63,7 +59,6 @@ public class BasicRideController implements BasicRideControllerApi {
                 .body(createdRide);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable
