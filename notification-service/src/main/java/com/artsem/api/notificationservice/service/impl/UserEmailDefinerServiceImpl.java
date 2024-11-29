@@ -20,11 +20,6 @@ public class UserEmailDefinerServiceImpl implements UserEmailDefinerService {
     @Override
     public String definePassengerEmail(String passengerId) {
         //TODO synchronous request to passenger-service
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return "am2134877@gmail.com";
     }
 
@@ -32,11 +27,6 @@ public class UserEmailDefinerServiceImpl implements UserEmailDefinerService {
     @Override
     public String defineDriverEmail(String driverId) {
         //TODO synchronous request to driver-service
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return "am2134877@gmail.com";
     }
 

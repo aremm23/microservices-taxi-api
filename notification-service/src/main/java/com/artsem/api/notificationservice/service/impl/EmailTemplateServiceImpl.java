@@ -55,7 +55,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
     private final UserEmailDefinerService userEmailDefinerService;
 
     @Override
-    public void emailConfirmation(EmailConfirmationDto emailConfirmationDto) {
+    public void emailConfirmationTemplate(EmailConfirmationDto emailConfirmationDto) {
         emailSenderService.trySendEmail(
                 emailConfirmationDto.email(),
                 EMAIL_CONFIRMATION_SUBJECT,
@@ -64,7 +64,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
     }
 
     @Override
-    public void requestRide(RequestRideDto requestRideDto) {
+    public void requestRideTemplate(RequestRideDto requestRideDto) {
         List<String> emails = userEmailDefinerService.defineRecentDriversEmails();
         String message = REQUESTED_RIDE_MESSAGE_TEMPLATE.formatted(
                 requestRideDto.pickUpLocation(),
@@ -85,8 +85,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
         );
     }
 
-     @Override
-     public void acceptRide(AcceptedRideDto acceptedRideDto) {
+    @Override
+    public void acceptRideTemplate(AcceptedRideDto acceptedRideDto) {
         String email = userEmailDefinerService.definePassengerEmail(acceptedRideDto.passengerId());
         String message = ACCEPTED_RIDE_MESSAGE_TEMPLATE.formatted(
                 acceptedRideDto.driverId(),
@@ -102,7 +102,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
     }
 
     @Override
-    public void finishRide(FinishedRideDto finishedRideDto) {
+    public void finishRideTemplate(FinishedRideDto finishedRideDto) {
         String email = userEmailDefinerService.definePassengerEmail(finishedRideDto.passengerId());
         String message = FINISHED_RIDE_MESSAGE_TEMPLATE.formatted(
                 finishedRideDto.driverId(),

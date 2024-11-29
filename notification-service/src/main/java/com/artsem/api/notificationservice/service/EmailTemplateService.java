@@ -6,11 +6,11 @@ import com.artsem.api.notificationservice.dto.FinishedRideDto;
 import com.artsem.api.notificationservice.dto.RequestRideDto;
 
 public interface EmailTemplateService {
-    void emailConfirmation(EmailConfirmationDto emailConfirmationDto);
+    void emailConfirmationTemplate(EmailConfirmationDto emailConfirmationDto);
 
-    void requestRide(RequestRideDto requestRideDto);
+    void requestRideTemplate(RequestRideDto requestRideDto);
 
-    void acceptRide(AcceptedRideDto acceptedRideDto);
+    void acceptRideTemplate(AcceptedRideDto acceptedRideDto);
 
-    void finishRide(FinishedRideDto finishedRideDto);
+    void finishRideTemplate(FinishedRideDto finishedRideDto);
 }
