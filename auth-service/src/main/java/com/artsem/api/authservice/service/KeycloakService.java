@@ -18,7 +18,7 @@ public interface KeycloakService {
 
     UserResource findUserById(String userId);
 
-    void forgotPassword(String username);
-
     void deleteUser(String userId);
+
+    void confirmEmailStatus(String token);
 }

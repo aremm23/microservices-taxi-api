@@ -5,5 +5,5 @@ package com.artsem.api.authservice.service.kafka.producer;
  * to a Kafka topic.
  */
 public interface NotificationProducer {
-    void send();
+    void sendEmailVerificationMessage(String email, String token);
 }

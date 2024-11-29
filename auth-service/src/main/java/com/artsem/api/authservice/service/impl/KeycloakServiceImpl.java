@@ -1,10 +1,13 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.exception.UserNotFoundException;
 import com.artsem.api.authservice.model.UserIdsMessage;
 import com.artsem.api.authservice.model.UserLoginRecord;
 import com.artsem.api.authservice.model.UserRegisterDto;
+import com.artsem.api.authservice.service.JwtService;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.kafka.producer.NotificationProducer;
+import com.artsem.api.authservice.util.ExceptionKeys;
 import com.artsem.api.authservice.util.StatusCodeValidator;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -37,40 +40,31 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     private final NotificationProducer notificationProducer;
 
+    private final JwtService jwtService;
+
     private final String serverUrl;
 
     private final String userClientId;
 
     private final String realm;
 
-    /**
-     * If the notification service is disabled, email notifications will not be sent.
-     * This means users will not be able to confirm their actions through email verification.
-     * To ensure functionality without email verification, new users will be marked as
-     * "email confirmed" by default (true) after registration.
-     * Similarly, email confirmation status will be set to true after password changes.
-     */
-    // TODO: to be implemented
-    private final boolean isNotificationServiceEnabled;
-
     public KeycloakServiceImpl(
             UsersResource usersResource,
             UserRepresentation userRepresentation,
             CredentialRepresentation credentialRepresentation,
-            NotificationProducer notificationProducer,
+            NotificationProducer notificationProducer, JwtService jwtService,
             @Value("${app.keycloak.server-url}") String serverUrl,
             @Value("${app.keycloak.user.client-id}") String userClientId,
-            @Value("${app.keycloak.realm}") String realm,
-            @Value("${taxi-api.notification-service.enabled}") boolean isNotificationServiceEnabled
+            @Value("${app.keycloak.realm}") String realm
     ) {
         this.usersResource = usersResource;
         this.userRepresentation = userRepresentation;
         this.credentialRepresentation = credentialRepresentation;
         this.notificationProducer = notificationProducer;
+        this.jwtService = jwtService;
         this.serverUrl = serverUrl;
         this.userClientId = userClientId;
         this.realm = realm;
-        this.isNotificationServiceEnabled = isNotificationServiceEnabled;
     }
 
     public AccessTokenResponse getJwt(UserLoginRecord userLoginRecord) {
@@ -87,7 +81,6 @@ public class KeycloakServiceImpl implements KeycloakService {
             return userKeycloak.tokenManager().getAccessToken();
         }
     }
-
 
     @Override
     public UserResource createUser(UserRegisterDto userRegisterDto) {
@@ -123,9 +116,10 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public void sendVerificationEmail(String userId) {
-        log.info("Sending verification email...");
-        // TODO: to be implemented
-        notificationProducer.send();
+        UserRepresentation user = findUserById(userId).toRepresentation();
+        String confirmationToken = jwtService.generateEmailConfirmationToken(user.getEmail());
+        notificationProducer.sendEmailVerificationMessage(user.getEmail(), confirmationToken);
+        log.info("Sending verification email: {}", confirmationToken);
     }
 
     @Override
@@ -142,10 +136,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         userRepresentation.setFirstName(userRegisterDto.getFirstname());
         userRepresentation.setLastName(userRegisterDto.getLastname());
         userRepresentation.setCreatedTimestamp(System.currentTimeMillis());
-        //false - if notification service enabled
-        //true if not
-        // TODO: to be implemented
-        userRepresentation.setEmailVerified(!isNotificationServiceEnabled);
+        userRepresentation.setEmailVerified(false);
         credentialRepresentation.setValue(userRegisterDto.getPassword());
         credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
         userRepresentation.setCredentials(List.of(credentialRepresentation));
@@ -157,11 +148,20 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void forgotPassword(String username) {
-        UserResource userResource = usersResource.get(usersResource.search(username).get(0).getId());
-        log.info("Sending password update email...");
-        // TODO: to be implemented
-        notificationProducer.send();
+    public void confirmEmailStatus(String token) {
+        String email = jwtService.getEmailFromToken(token);
+        UserRepresentation user = extractUserRepresentationByEmail(email);
+        UserResource userResource = usersResource.get(user.getId());
+        user.setEmailVerified(true);
+        userResource.update(user);
+    }
+
+    private UserRepresentation extractUserRepresentationByEmail(String email) {
+        List<UserRepresentation> users = usersResource.search(email, 0, 1);
+        if (users.isEmpty()) {
+            throw new UserNotFoundException(ExceptionKeys.INVALID_USER_EMAIL);
+        }
+        return users.get(0);
     }
 
 }
