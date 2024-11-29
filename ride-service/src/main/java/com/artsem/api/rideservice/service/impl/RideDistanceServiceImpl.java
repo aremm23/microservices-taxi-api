@@ -6,6 +6,7 @@ import com.artsem.api.rideservice.exception.InvalidResponseException;
 import com.artsem.api.rideservice.model.util.DistanceAndDurationValues;
 import com.artsem.api.rideservice.model.util.DistanceMatrixResponse;
 import com.artsem.api.rideservice.service.RideDistanceService;
+import com.artsem.api.rideservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class RideDistanceServiceImpl implements RideDistanceService {
 
     @Cacheable(value = "distanceAndDurationCache", key = "#pickUpLocation + ':' + #dropOffLocation")
     public DistanceAndDurationValues getDistanceAndDuration(String pickUpLocation, String dropOffLocation) {
+        if (pickUpLocation == null || dropOffLocation == null) {
+            throw new IllegalArgumentException(ExceptionKeys.PICKUP_AND_DROP_OFF_REQUIRED);
+        }
         String url = buildUrl(pickUpLocation, dropOffLocation);
         DistanceMatrixResponse response = restTemplate.getForObject(url, DistanceMatrixResponse.class);
         validateResponse(response);

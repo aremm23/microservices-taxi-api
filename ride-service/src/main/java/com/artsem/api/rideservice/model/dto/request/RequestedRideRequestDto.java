@@ -1,7 +1,5 @@
 package com.artsem.api.rideservice.model.dto.request;
 
-import com.artsem.api.rideservice.model.PaymentMethod;
-import com.artsem.api.rideservice.model.RideTariff;
 import com.artsem.api.rideservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +25,7 @@ public class RequestedRideRequestDto {
     @PositiveOrZero(message = ValidationKeys.PRICE_POSITIVE_OR_ZERO)
     private Double price;
     @NotNull(message = ValidationKeys.TARIFF_ID_REQUIRED)
-    private RideTariff tariff;
+    private Long tariffId;
     @NotNull(message = ValidationKeys.PAYMENT_METHOD_ID_REQUIRED)
-    private PaymentMethod paymentMethod;
+    private Long paymentMethodId;
 }
