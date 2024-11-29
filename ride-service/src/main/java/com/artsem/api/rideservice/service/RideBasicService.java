@@ -1,8 +1,8 @@
 package com.artsem.api.rideservice.service;
 
 import com.artsem.api.rideservice.filter.RideFilter;
-import com.artsem.api.rideservice.model.dto.rest.request.RideRequestDto;
-import com.artsem.api.rideservice.model.dto.rest.response.RideResponseDto;
+import com.artsem.api.rideservice.model.dto.request.RideRequestDto;
+import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

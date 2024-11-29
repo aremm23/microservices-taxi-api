@@ -16,6 +16,18 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+    private static RedisSerializationContext.SerializationPair<Object> getValueSerializationPair() {
+        return RedisSerializationContext.SerializationPair.fromSerializer(
+                new GenericJackson2JsonRedisSerializer()
+        );
+    }
+
+    private static RedisSerializationContext.SerializationPair<String> getKeySerializationPair() {
+        return RedisSerializationContext.SerializationPair.fromSerializer(
+                new StringRedisSerializer()
+        );
+    }
+
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig();
@@ -28,16 +40,13 @@ public class RedisConfig {
                 .withCacheConfiguration("distanceAndDurationCache",
                         RedisCacheConfiguration.defaultCacheConfig()
                                 .entryTtl(Duration.ofSeconds(30))
-                                .serializeValuesWith(
-                                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                                new GenericJackson2JsonRedisSerializer()
-                                        )
-                                )
-                                .serializeKeysWith(
-                                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                                new StringRedisSerializer()
-                                        )
-                                ))
+                                .serializeValuesWith(getValueSerializationPair())
+                                .serializeKeysWith(getKeySerializationPair()))
+                .withCacheConfiguration("passengersIdCache",
+                        RedisCacheConfiguration.defaultCacheConfig()
+                                .entryTtl(Duration.ofHours(3))
+                                .serializeValuesWith(getValueSerializationPair())
+                                .serializeKeysWith(getKeySerializationPair()))
                 .build();
     }
 }

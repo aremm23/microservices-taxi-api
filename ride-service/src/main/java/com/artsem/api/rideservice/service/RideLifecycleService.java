@@ -1,21 +1,20 @@
 package com.artsem.api.rideservice.service;
 
-import com.artsem.api.rideservice.model.dto.internal.AcceptedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.CancelledRideDto;
-import com.artsem.api.rideservice.model.dto.internal.CompletedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.RequestedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.StartedRideDto;
+import com.artsem.api.rideservice.model.dto.request.AcceptedRideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.CancelledRideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.RequestedRideRequestDto;
+import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 
 public interface RideLifecycleService {
 
-    void requestRide(RequestedRideDto rideDto);
+    RideResponseDto requestRide(RequestedRideRequestDto rideDto);
 
-    void acceptRide(AcceptedRideDto rideDto);
+    RideResponseDto acceptRide(String rideId, AcceptedRideRequestDto rideDto);
 
-    void startRide(StartedRideDto rideDto);
+    RideResponseDto startRide(String rideId);
 
-    void finishRide(CompletedRideDto rideDto);
+    RideResponseDto finishRide(String rideId);
 
-    void cancelRide(CancelledRideDto rideDto);
+    RideResponseDto cancelRide(String rideId, CancelledRideRequestDto rideDto);
 
 }

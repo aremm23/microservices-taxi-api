@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto.rest.response;
+package com.artsem.api.rideservice.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto.rest.request;
+package com.artsem.api.rideservice.model.dto.request;
 
 import com.artsem.api.rideservice.util.ValidationKeys;
 import com.fasterxml.jackson.annotation.JsonFormat;

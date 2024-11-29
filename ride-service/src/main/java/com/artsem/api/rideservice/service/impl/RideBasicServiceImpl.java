@@ -3,12 +3,13 @@ package com.artsem.api.rideservice.service.impl;
 import com.artsem.api.rideservice.exception.RideNotFoundException;
 import com.artsem.api.rideservice.filter.RideFilter;
 import com.artsem.api.rideservice.model.Ride;
-import com.artsem.api.rideservice.model.dto.rest.request.RideRequestDto;
-import com.artsem.api.rideservice.model.dto.rest.response.RideResponseDto;
+import com.artsem.api.rideservice.model.dto.request.RideRequestDto;
+import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 import com.artsem.api.rideservice.repository.RideRepository;
 import com.artsem.api.rideservice.service.RideBasicService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,13 @@ public class RideBasicServiceImpl implements RideBasicService {
     public RideResponseDto getById(String id) {
         Ride ride = findRideById(id);
         return mapper.map(ride, RideResponseDto.class);
+    }
+
+    @Cacheable(value = "passengersIdCache", key = "#rideId")
+    public Long getPassengerIdByRideId(String rideId) {
+        return rideRepository.findById(rideId)
+                .map(Ride::getPassengerId)
+                .orElseThrow(RideNotFoundException::new);
     }
 
     public RideResponseDto create(RideRequestDto rideDto) {

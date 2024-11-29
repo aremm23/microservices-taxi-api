@@ -1,8 +1,8 @@
 package com.artsem.api.rideservice.config;
 
 import com.artsem.api.rideservice.model.Ride;
-import com.artsem.api.rideservice.model.dto.internal.RequestedRideDto;
-import com.artsem.api.rideservice.model.dto.rest.request.RideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.RequestedRideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.RideRequestDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,7 @@ public class ModelMapperConfig {
     }
 
     private void setupRequestedRideDtoMapping(ModelMapper modelMapper) {
-        modelMapper.typeMap(RequestedRideDto.class, Ride.class)
+        modelMapper.typeMap(RequestedRideRequestDto.class, Ride.class)
                 .addMappings(mapper -> mapper.skip(Ride::setId));
     }
 
