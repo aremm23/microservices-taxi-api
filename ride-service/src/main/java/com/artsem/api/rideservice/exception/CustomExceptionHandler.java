@@ -25,7 +25,6 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
-            RideNotFoundException.class,
             InvalidRideStatusException.class,
             InvalidResponseElementException.class,
             InvalidResponseException.class,
@@ -36,6 +35,18 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(
                 createErrorResponse(message),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({
+            RideNotFoundException.class,
+    })
+    public ResponseEntity<ErrorResponse> handlerException(RideNotFoundException e) {
+        String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+        return new ResponseEntity<>(
+                createErrorResponse(message),
+                HttpStatus.NOT_FOUND
         );
     }
 
