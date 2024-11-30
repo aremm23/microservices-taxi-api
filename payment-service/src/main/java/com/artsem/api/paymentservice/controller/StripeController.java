@@ -1,5 +1,6 @@
 package com.artsem.api.paymentservice.controller;
 
+import com.artsem.api.paymentservice.controller.api.StripeApi;
 import com.artsem.api.paymentservice.model.dto.response.CapturePaymentResponseDto;
 import com.artsem.api.paymentservice.model.dto.request.RefillBalanceRequestDto;
 import com.artsem.api.paymentservice.model.dto.response.StripeResponseDto;
@@ -18,7 +19,7 @@ import java.math.BigDecimal;
 @RestController
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
-public class StripeController {
+public class StripeController implements StripeApi {
 
     private final StripeService stripeService;
 

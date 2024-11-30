@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.artsem.api</groupId>
@@ -17,6 +17,7 @@
         <java.version>17</java.version>
         <stripe.version>20.79.0</stripe.version>
         <modelmapper.version>3.2.0</modelmapper.version>
+        <openapi.version>2.1.0</openapi.version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,6 +43,11 @@
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
             <version>${stripe.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${openapi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,5 +1,7 @@
 package com.artsem.api.paymentservice.controller;
 
+import com.artsem.api.paymentservice.controller.api.BalanceApi;
+import com.artsem.api.paymentservice.model.dto.IsBalancePositiveDto;
 import com.artsem.api.paymentservice.model.dto.request.InitBalanceRequestDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
@@ -8,16 +10,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/api/v1/balances")
 @RequiredArgsConstructor
-public class BalanceController {
+public class BalanceController implements BalanceApi {
 
     private final BalanceService balanceService;
 
@@ -27,6 +32,21 @@ public class BalanceController {
     ) {
         BalanceResponseDto savedBalance = balanceService.initBalance(initBalanceRequestDto.userId());
         return new ResponseEntity<>(savedBalance, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{id}/charge")
+    public ResponseEntity<BalanceResponseDto> charge(
+            @PathVariable Long id,
+            @RequestBody Long amount
+    ) {
+        BalanceResponseDto savedBalance = balanceService.charge(id, BigDecimal.valueOf(amount));
+        return ResponseEntity.ok(savedBalance);
+    }
+
+    @GetMapping("/{userId}/is-positive")
+    public ResponseEntity<IsBalancePositiveDto> isBalancePositive(@PathVariable Long userId) {
+        IsBalancePositiveDto response = balanceService.isBalancePositive(userId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

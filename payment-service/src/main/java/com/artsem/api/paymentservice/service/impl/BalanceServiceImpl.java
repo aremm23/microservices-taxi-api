@@ -1,6 +1,9 @@
 package com.artsem.api.paymentservice.service.impl;
 
+import com.artsem.api.paymentservice.exceptions.BalanceAlreadyExistsException;
+import com.artsem.api.paymentservice.exceptions.BalanceNotFoundException;
 import com.artsem.api.paymentservice.model.Balance;
+import com.artsem.api.paymentservice.model.dto.IsBalancePositiveDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import com.artsem.api.paymentservice.repository.BalanceRepository;
 import com.artsem.api.paymentservice.service.BalanceService;
@@ -18,6 +21,26 @@ public class BalanceServiceImpl implements BalanceService {
     private final BalanceRepository balanceRepository;
 
     private final ModelMapper mapper;
+
+    @Transactional
+    @Override
+    public BalanceResponseDto charge(Long id, BigDecimal amount) {
+        checkIsExist(id);
+        Balance balance = findBalanceById(id);
+        balance.setAmount(balance.getAmount().subtract(amount));
+        Balance savedBalance = balanceRepository.save(balance);
+        return mapper.map(savedBalance, BalanceResponseDto.class);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public IsBalancePositiveDto isBalancePositive(Long userId) {
+        boolean isBalancePositive = balanceRepository.isBalancePositiveByUserId(userId);
+        return IsBalancePositiveDto.builder()
+                .balanceUserId(userId)
+                .isBalancePositive(isBalancePositive)
+                .build();
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -46,14 +69,14 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     private void checkIsExist(Long id) {
-        if (!isBalanceExist(id)) {
-            throw new RuntimeException("Balance not found");
+        if (!balanceRepository.existsById(id)) {
+            throw new BalanceNotFoundException();
         }
     }
 
     private void checkIsExistByUser(Long userId) {
         if (balanceRepository.existsByUserId(userId)) {
-            throw new RuntimeException("Balance already exists for user: " + userId);
+            throw new BalanceAlreadyExistsException();
         }
     }
 
@@ -67,13 +90,13 @@ public class BalanceServiceImpl implements BalanceService {
 
     private Balance findBalanceById(Long id) {
         return balanceRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Not found balance with id: " + id)//TODO: custom exception
+                BalanceNotFoundException::new
         );
     }
 
     @Transactional(readOnly = true)
     @Override
-    public boolean isBalanceExist(Long id) {
-        return balanceRepository.existsById(id);
+    public void isBalanceExist(Long id) {
+        checkIsExist(id);
     }
 }
