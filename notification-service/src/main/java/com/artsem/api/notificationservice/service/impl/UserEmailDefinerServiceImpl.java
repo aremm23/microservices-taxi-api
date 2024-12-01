@@ -1,5 +1,9 @@
 package com.artsem.api.notificationservice.service.impl;
 
+import com.artsem.api.notificationservice.dto.UserEmailResponseDto;
+import com.artsem.api.notificationservice.exception.IncorrectResponseBodyException;
+import com.artsem.api.notificationservice.feign.client.DriverServiceClient;
+import com.artsem.api.notificationservice.feign.client.PassengerServiceClient;
 import com.artsem.api.notificationservice.service.UserEmailDefinerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,18 +20,30 @@ public class UserEmailDefinerServiceImpl implements UserEmailDefinerService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final DriverServiceClient driverServiceClient;
+
+    private final PassengerServiceClient passengerServiceClient;
+
     @Cacheable(value = "passengerEmails", key = "#passengerId")
     @Override
     public String definePassengerEmail(String passengerId) {
-        //TODO synchronous request to passenger-service
-        return "am2134877@gmail.com";
+        UserEmailResponseDto passengerEmailResponseDto = passengerServiceClient.getPassengerEmailById(passengerId);
+        checkIsResponseValid(passengerId, passengerEmailResponseDto);
+        return passengerEmailResponseDto.email();
     }
 
     @Cacheable(value = "driverEmails", key = "#driverId")
     @Override
     public String defineDriverEmail(String driverId) {
-        //TODO synchronous request to driver-service
-        return "am2134877@gmail.com";
+        UserEmailResponseDto driverEmailResponseDto = driverServiceClient.getDriverEmailById(driverId);
+        checkIsResponseValid(driverId, driverEmailResponseDto);
+        return driverEmailResponseDto.email();
+    }
+
+    private void checkIsResponseValid(String driverId, UserEmailResponseDto userEmailResponseDto) {
+        if(!userEmailResponseDto.id().toString().equals(driverId) || userEmailResponseDto.email().isEmpty()) {
+            throw new IncorrectResponseBodyException();
+        }
     }
 
     @Override
