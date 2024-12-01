@@ -35,7 +35,9 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional(readOnly = true)
     @Override
     public IsBalancePositiveDto isBalancePositive(Long userId) {
-        boolean isBalancePositive = balanceRepository.isBalancePositiveByUserId(userId);
+        boolean isBalancePositive = balanceRepository.isBalancePositiveByUserId(userId).orElseThrow(
+                BalanceNotFoundException::new
+        );
         return IsBalancePositiveDto.builder()
                 .balanceUserId(userId)
                 .isBalancePositive(isBalancePositive)
