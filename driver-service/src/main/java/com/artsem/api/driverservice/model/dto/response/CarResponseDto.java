@@ -1,4 +1,4 @@
-package com.artsem.api.driverservice.model.dto.responce;
+package com.artsem.api.driverservice.model.dto.response;
 
 import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.CarCategory;
