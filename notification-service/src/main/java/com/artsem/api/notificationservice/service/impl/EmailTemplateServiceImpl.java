@@ -87,7 +87,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
     @Override
     public void acceptRideTemplate(AcceptedRideDto acceptedRideDto) {
-        String email = userEmailDefinerService.definePassengerEmail(acceptedRideDto.passengerId());
+        String email = userEmailDefinerService.definePassengerEmail(
+                acceptedRideDto.passengerId()
+        );
         String message = ACCEPTED_RIDE_MESSAGE_TEMPLATE.formatted(
                 acceptedRideDto.driverId(),
                 acceptedRideDto.rideId(),
@@ -103,7 +105,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
     @Override
     public void finishRideTemplate(FinishedRideDto finishedRideDto) {
-        String email = userEmailDefinerService.definePassengerEmail(finishedRideDto.passengerId());
+        String email = userEmailDefinerService.definePassengerEmail(
+                finishedRideDto.passengerId()
+        );
         String message = FINISHED_RIDE_MESSAGE_TEMPLATE.formatted(
                 finishedRideDto.driverId(),
                 finishedRideDto.rideId(),

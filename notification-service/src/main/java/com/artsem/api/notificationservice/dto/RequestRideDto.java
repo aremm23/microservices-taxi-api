@@ -1,5 +1,8 @@
 package com.artsem.api.notificationservice.dto;
 
+import lombok.Builder;
+
+@Builder
 public record RequestRideDto(
         String passengerId,
         String rideId,
