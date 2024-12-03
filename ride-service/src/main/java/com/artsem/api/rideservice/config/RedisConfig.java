@@ -1,5 +1,6 @@
 package com.artsem.api.rideservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +17,18 @@ import java.time.Duration;
 @EnableCaching
 public class RedisConfig {
 
+    public RedisConfig(
+            @Value("${cache.distance-and-duration.ttl-seconds}") int distanceAndDurationCacheTtlSeconds,
+            @Value("${cache.passenger-id.ttl-hours}") int passengerIdCacheTtlHours
+    ) {
+        this.distanceAndDurationCacheTtlSeconds = distanceAndDurationCacheTtlSeconds;
+        this.passengerIdCacheTtlHours = passengerIdCacheTtlHours;
+    }
+
     public static final String DISTANCE_AND_DURATION_CACHE_NAME = "distanceAndDurationCache";
     public static final String PASSENGERS_ID_CACHE_NAME = "passengersIdCache";
-    public static final int DISTANCE_AND_DURATION_CACHE_TTL_SECONDS = 30;
-    public static final int PASSENGER_ID_CACHE_TTL_HOURS = 3;
+    private final int distanceAndDurationCacheTtlSeconds;
+    private final int passengerIdCacheTtlHours;
 
     private static RedisSerializationContext.SerializationPair<Object> getValueSerializationPair() {
         return RedisSerializationContext.SerializationPair.fromSerializer(
@@ -44,12 +53,12 @@ public class RedisConfig {
                 .cacheDefaults(cacheConfiguration())
                 .withCacheConfiguration(DISTANCE_AND_DURATION_CACHE_NAME,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .entryTtl(Duration.ofSeconds(DISTANCE_AND_DURATION_CACHE_TTL_SECONDS))
+                                .entryTtl(Duration.ofSeconds(distanceAndDurationCacheTtlSeconds))
                                 .serializeValuesWith(getValueSerializationPair())
                                 .serializeKeysWith(getKeySerializationPair()))
                 .withCacheConfiguration(PASSENGERS_ID_CACHE_NAME,
                         RedisCacheConfiguration.defaultCacheConfig()
-                                .entryTtl(Duration.ofHours(PASSENGER_ID_CACHE_TTL_HOURS))
+                                .entryTtl(Duration.ofHours(passengerIdCacheTtlHours))
                                 .serializeValuesWith(getValueSerializationPair())
                                 .serializeKeysWith(getKeySerializationPair()))
                 .build();
