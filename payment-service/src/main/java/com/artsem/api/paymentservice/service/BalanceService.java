@@ -1,5 +1,6 @@
 package com.artsem.api.paymentservice.service;
 
+import com.artsem.api.paymentservice.model.dto.IsBalancePositiveDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 
 import java.math.BigDecimal;
@@ -14,6 +15,9 @@ public interface BalanceService {
 
     void refillBalance(BigDecimal amount, Long id);
 
-    boolean isBalanceExist(Long balanceId);
+    void validateBalanceExistence(Long balanceId);
 
+    BalanceResponseDto charge(Long id, BigDecimal amount);
+
+    IsBalancePositiveDto isBalancePositive(Long userId);
 }
