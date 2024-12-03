@@ -6,6 +6,7 @@ import com.artsem.api.rideservice.model.dto.request.RequestedRideRequestDto;
 import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface RideLifecycleControllerApi {
 
     @Operation(summary = "Request a ride", description = "Request a new ride")
+    @ApiResponse(responseCode = "201", description = "The requested ride")
+    @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
     @PostMapping("/request")
     ResponseEntity<RideResponseDto> requestRide(
             @Parameter(description = "Details of the ride to request")
@@ -23,6 +26,9 @@ public interface RideLifecycleControllerApi {
     );
 
     @Operation(summary = "Accept a ride", description = "Accept an incoming ride request")
+    @ApiResponse(responseCode = "200", description = "The accepted ride")
+    @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
+    @ApiResponse(responseCode = "404", description = "Ride not found")
     @PatchMapping("/{id}/accept")
     ResponseEntity<RideResponseDto> acceptRide(
             @Parameter(description = "ID of the ride to accept")
@@ -32,6 +38,9 @@ public interface RideLifecycleControllerApi {
     );
 
     @Operation(summary = "Start a ride", description = "Start a ride that has been accepted")
+    @ApiResponse(responseCode = "200", description = "The started ride")
+    @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
+    @ApiResponse(responseCode = "404", description = "Ride not found")
     @PatchMapping("/{id}/start")
     ResponseEntity<RideResponseDto> startRide(
             @Parameter(description = "ID of the ride to start")
@@ -39,6 +48,9 @@ public interface RideLifecycleControllerApi {
     );
 
     @Operation(summary = "Complete a ride", description = "Complete a ride that has been started")
+    @ApiResponse(responseCode = "200", description = "The completed ride")
+    @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
+    @ApiResponse(responseCode = "404", description = "Ride not found")
     @PatchMapping("/{id}/complete")
     ResponseEntity<RideResponseDto> completeRide(
             @Parameter(description = "ID of the ride to complete")
@@ -46,6 +58,9 @@ public interface RideLifecycleControllerApi {
     );
 
     @Operation(summary = "Cancel a ride", description = "Cancel a ride before it has been completed")
+    @ApiResponse(responseCode = "200", description = "The canceled ride")
+    @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
+    @ApiResponse(responseCode = "404", description = "Ride not found")
     @PatchMapping("/{id}/cancel")
     ResponseEntity<RideResponseDto> cancelRide(
             @Parameter(description = "ID of the ride to cancel")
