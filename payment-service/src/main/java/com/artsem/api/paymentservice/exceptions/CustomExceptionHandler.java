@@ -48,14 +48,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    private String resolveBalanceAlreadyExistsExceptionInfo(BalanceAlreadyExistsException ex) {
-        return messageSource.getMessage(
-                Objects.requireNonNull(ex.getMessage()),
-                new Object[]{ex.getUserId()},
-                LocaleContextHolder.getLocale()
-        );
-    }
-
     @ExceptionHandler(BalanceAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleBalanceAlreadyExistsExceptions(BalanceAlreadyExistsException ex) {
         return new ResponseEntity<>(
@@ -64,15 +56,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    private String resolveBalanceNotFoundByUserIdExceptionInfo(BalanceNotFoundByUserIdException ex) {
-        return messageSource.getMessage(
-                Objects.requireNonNull(ex.getMessage()),
-                new Object[]{ex.getUserId()},
-                LocaleContextHolder.getLocale()
-        );
-    }
-
-
     @ExceptionHandler(BalanceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBalanceNotFoundExceptions(BalanceNotFoundException ex) {
         return new ResponseEntity<>(
@@ -80,15 +63,6 @@ public class CustomExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
-
-    private String resolveBalanceNotFoundExceptionInfo(BalanceNotFoundException ex) {
-        return messageSource.getMessage(
-                Objects.requireNonNull(ex.getMessage()),
-                new Object[]{ex.getBalanceId()},
-                LocaleContextHolder.getLocale()
-        );
-    }
-
 
     @ExceptionHandler(UnableParseJsonException.class)
     public ResponseEntity<ErrorResponse> handleUnableParseJsonExceptions(UnableParseJsonException ex) {
@@ -103,6 +77,30 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(
                 createErrorResponse(resolveStripeSessionExceptionInfo(ex)),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    private String resolveBalanceAlreadyExistsExceptionInfo(BalanceAlreadyExistsException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getUserId()},
+                LocaleContextHolder.getLocale()
+        );
+    }
+
+    private String resolveBalanceNotFoundByUserIdExceptionInfo(BalanceNotFoundByUserIdException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getUserId()},
+                LocaleContextHolder.getLocale()
+        );
+    }
+
+    private String resolveBalanceNotFoundExceptionInfo(BalanceNotFoundException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getBalanceId()},
+                LocaleContextHolder.getLocale()
         );
     }
 
