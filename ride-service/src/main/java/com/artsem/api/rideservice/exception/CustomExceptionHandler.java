@@ -10,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
@@ -23,10 +22,11 @@ public class CustomExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
-            RideNotFoundException.class,
-            InvalidRideStatusException.class
+            InvalidRideStatusException.class,
+            InvalidResponseElementException.class,
+            InvalidResponseException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
         String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
@@ -36,7 +36,15 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RideNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerException(RideNotFoundException e) {
+        String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+        return new ResponseEntity<>(
+                createErrorResponse(message),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         return new ResponseEntity<>(

@@ -12,6 +12,10 @@ import java.util.Locale;
 @Configuration
 public class LocalizationConfig {
 
+    public static final String DEFAULT_ENCODING = "ISO-8859-1";
+    public static final String VALIDATION_BASENAME = "classpath:validation";
+    private static final String EXCEPTION_BASENAME = "classpath:exceptions";
+
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
@@ -22,8 +26,8 @@ public class LocalizationConfig {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:validation", "classpath:exceptions");
-        messageSource.setDefaultEncoding("ISO-8859-1");
+        messageSource.setBasenames(VALIDATION_BASENAME, EXCEPTION_BASENAME);
+        messageSource.setDefaultEncoding(DEFAULT_ENCODING);
         return messageSource;
     }
 }

@@ -1,4 +1,4 @@
-package com.artsem.api.rideservice.model.dto.internal;
+package com.artsem.api.rideservice.model.dto.request;
 
 import com.artsem.api.rideservice.model.util.UserRole;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CancelledRideDto {
-    private String rideId;
+public class CancelledRideRequestDto {
     private UserRole userRole;
 }
