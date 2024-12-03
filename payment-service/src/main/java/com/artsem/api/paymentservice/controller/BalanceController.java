@@ -1,7 +1,7 @@
 package com.artsem.api.paymentservice.controller;
 
 import com.artsem.api.paymentservice.controller.api.BalanceApi;
-import com.artsem.api.paymentservice.model.dto.IsBalancePositiveDto;
+import com.artsem.api.paymentservice.model.dto.request.AmountRequestDto;
 import com.artsem.api.paymentservice.model.dto.request.InitBalanceRequestDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
@@ -37,16 +37,13 @@ public class BalanceController implements BalanceApi {
     @PatchMapping("/{id}/charge")
     public ResponseEntity<BalanceResponseDto> charge(
             @PathVariable Long id,
-            @RequestBody Long amount
+            @RequestBody AmountRequestDto amountRequestDto
     ) {
-        BalanceResponseDto savedBalance = balanceService.charge(id, BigDecimal.valueOf(amount));
+        BalanceResponseDto savedBalance = balanceService.charge(
+                id,
+                BigDecimal.valueOf(amountRequestDto.amount())
+        );
         return ResponseEntity.ok(savedBalance);
-    }
-
-    @GetMapping("/{userId}/is-positive")
-    public ResponseEntity<IsBalancePositiveDto> isBalancePositive(@PathVariable Long userId) {
-        IsBalancePositiveDto response = balanceService.isBalancePositive(userId);
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
