@@ -68,7 +68,7 @@ public class StripeServiceImpl implements StripeService {
     }
 
     private void checkBalanceExist(Long balanceId) {
-        balanceService.isBalanceExist(balanceId);
+        balanceService.validateBalanceExistence(balanceId);
     }
 
     private Session tryCreateSession(SessionCreateParams params) {

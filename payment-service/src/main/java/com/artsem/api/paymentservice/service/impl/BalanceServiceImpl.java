@@ -98,7 +98,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional(readOnly = true)
     @Override
-    public void isBalanceExist(Long id) {
+    public void validateBalanceExistence(Long id) {
         checkIsExist(id);
     }
 }

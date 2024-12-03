@@ -15,7 +15,7 @@ public interface BalanceService {
 
     void refillBalance(BigDecimal amount, Long id);
 
-    void isBalanceExist(Long balanceId);
+    void validateBalanceExistence(Long balanceId);
 
     BalanceResponseDto charge(Long id, BigDecimal amount);
 
