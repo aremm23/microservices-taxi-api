@@ -36,7 +36,7 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     public IsBalancePositiveDto isBalancePositive(Long userId) {
         boolean isBalancePositive = balanceRepository.isBalancePositiveByUserId(userId).orElseThrow(
-                BalanceNotFoundException::new
+                () -> new BalanceNotFoundException(userId)
         );
         return IsBalancePositiveDto.builder()
                 .balanceUserId(userId)
@@ -72,13 +72,13 @@ public class BalanceServiceImpl implements BalanceService {
 
     private void checkIsExist(Long id) {
         if (!balanceRepository.existsById(id)) {
-            throw new BalanceNotFoundException();
+            throw new BalanceNotFoundException(id);
         }
     }
 
     private void checkIsExistByUser(Long userId) {
         if (balanceRepository.existsByUserId(userId)) {
-            throw new BalanceAlreadyExistsException();
+            throw new BalanceAlreadyExistsException(userId);
         }
     }
 
@@ -92,7 +92,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     private Balance findBalanceById(Long id) {
         return balanceRepository.findById(id).orElseThrow(
-                BalanceNotFoundException::new
+                () -> new BalanceNotFoundException(id)
         );
     }
 

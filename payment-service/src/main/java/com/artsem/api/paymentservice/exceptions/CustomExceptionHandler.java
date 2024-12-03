@@ -10,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
@@ -24,12 +23,7 @@ public class CustomExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({
-            BalanceAlreadyExistsException.class,
-            BalanceNotFoundException.class,
-            UnableVerifyWebhookSignatureException.class
-    })
+    @ExceptionHandler(UnableVerifyWebhookSignatureException.class)
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
         String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
@@ -38,7 +32,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         return new ResponseEntity<>(
@@ -47,7 +40,56 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BalanceNotFoundByUserIdException.class)
+    public ResponseEntity<ErrorResponse> handleBalanceNotFoundByUserIdExceptions(BalanceNotFoundByUserIdException ex) {
+        return new ResponseEntity<>(
+                createErrorResponse(resolveBalanceNotFoundByUserIdExceptionInfo(ex)),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    private String resolveBalanceAlreadyExistsExceptionInfo(BalanceAlreadyExistsException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getUserId()},
+                LocaleContextHolder.getLocale()
+        );
+    }
+
+    @ExceptionHandler(BalanceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleBalanceAlreadyExistsExceptions(BalanceAlreadyExistsException ex) {
+        return new ResponseEntity<>(
+                createErrorResponse(resolveBalanceAlreadyExistsExceptionInfo(ex)),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    private String resolveBalanceNotFoundByUserIdExceptionInfo(BalanceNotFoundByUserIdException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getUserId()},
+                LocaleContextHolder.getLocale()
+        );
+    }
+
+
+    @ExceptionHandler(BalanceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBalanceNotFoundExceptions(BalanceNotFoundException ex) {
+        return new ResponseEntity<>(
+                createErrorResponse(resolveBalanceNotFoundExceptionInfo(ex)),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    private String resolveBalanceNotFoundExceptionInfo(BalanceNotFoundException ex) {
+        return messageSource.getMessage(
+                Objects.requireNonNull(ex.getMessage()),
+                new Object[]{ex.getBalanceId()},
+                LocaleContextHolder.getLocale()
+        );
+    }
+
+
     @ExceptionHandler(UnableParseJsonException.class)
     public ResponseEntity<ErrorResponse> handleUnableParseJsonExceptions(UnableParseJsonException ex) {
         return new ResponseEntity<>(
@@ -56,7 +98,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(StripeSessionException.class)
     public ResponseEntity<ErrorResponse> handleStripeSessionExceptions(StripeSessionException ex) {
         return new ResponseEntity<>(

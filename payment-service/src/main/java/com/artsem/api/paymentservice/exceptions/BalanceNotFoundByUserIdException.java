@@ -4,11 +4,11 @@ import com.artsem.api.paymentservice.util.ExceptionKeys;
 import lombok.Getter;
 
 @Getter
-public class BalanceNotFoundException extends RuntimeException {
-    private final long balanceId;
+public class BalanceNotFoundByUserIdException extends RuntimeException {
+    private final long userId;
 
-    public BalanceNotFoundException(long balanceId) {
+    public BalanceNotFoundByUserIdException(long userId) {
         super(ExceptionKeys.BALANCE_NOT_FOUND);
-        this.balanceId = balanceId;
+        this.userId = userId;
     }
 }
