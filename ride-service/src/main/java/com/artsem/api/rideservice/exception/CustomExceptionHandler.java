@@ -10,7 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ public class CustomExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
             InvalidRideStatusException.class,
             InvalidResponseElementException.class,
@@ -38,10 +36,7 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({
-            RideNotFoundException.class,
-    })
+    @ExceptionHandler(RideNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlerException(RideNotFoundException e) {
         String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
@@ -50,7 +45,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         return new ResponseEntity<>(
