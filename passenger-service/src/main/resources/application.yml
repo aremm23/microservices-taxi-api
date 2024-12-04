@@ -4,14 +4,34 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_URI:localhost:5432}/passenger_service_db
-    username: postgres
-    password: postgres
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   jpa:
     open-in-view: false
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+  application:
+    name: passenger-service
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    port: ${RABBIT_PORT:5672}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
 
 springdoc:
   api-docs:
@@ -20,3 +40,15 @@ springdoc:
   swagger-ui:
     path: /passenger-service-docs/swagger-ui
     enabled: true
+
+openapi:
+  server:
+    url: http://localhost:8082
+    description: Passenger service
+  contact:
+    name: Artsem Maiseyenka
+    email: artsem.maiseyenka@gmail.com
+  info:
+    title: Passenger Service
+    version: 1.0
+    description: This API exposes endpoints to manage passengers
