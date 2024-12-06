@@ -13,6 +13,16 @@ spring:
   cache:
     type:
       redis
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bootstrap-servers: localhost:9092
+kafka:
+  topic:
+    payment-process-topic:
+      replicas: 1
+      partitions: 1
 
 eureka:
   client:
@@ -33,7 +43,6 @@ gcp:
       key: ${MAPS_API_KEY:your-api-key}
       url: https://maps.googleapis.com/maps/api/distancematrix/json
       units: metric
-
 
 springdoc:
   api-docs:

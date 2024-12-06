@@ -1,7 +1,14 @@
 package com.artsem.api.rideservice.service.impl;
 
+import com.artsem.api.rideservice.exception.InternalServiceException;
 import com.artsem.api.rideservice.exception.InvalidRideStatusException;
+import com.artsem.api.rideservice.exception.PositiveBalanceRequiredException;
 import com.artsem.api.rideservice.exception.RideNotFoundException;
+import com.artsem.api.rideservice.feign.IsBalancePositiveResponse;
+import com.artsem.api.rideservice.feign.client.PaymentServiceClient;
+import com.artsem.api.rideservice.kafka.PaymentProcessMessage;
+import com.artsem.api.rideservice.kafka.producer.PaymentProducer;
+import com.artsem.api.rideservice.model.PaymentMethod;
 import com.artsem.api.rideservice.model.Ride;
 import com.artsem.api.rideservice.model.RideStatus;
 import com.artsem.api.rideservice.model.dto.request.AcceptedRideRequestDto;
@@ -16,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -26,13 +34,34 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
 
     private final ModelMapper mapper;
 
+    private final PaymentProducer paymentProducer;
+
+    private final PaymentServiceClient paymentServiceClient;
+
     @Override
     public RideResponseDto requestRide(RequestedRideRequestDto rideDto) {
         Ride ride = mapper.map(rideDto, Ride.class);
+        checkPaymentMethod(ride);
         ride.setRequestedTime(LocalDateTime.now());
         ride.setStatusId(RideStatus.REQUESTED.getId());
         Ride savedRide = rideRepository.save(ride);
         return mapper.map(savedRide, RideResponseDto.class);
+    }
+
+    private void checkPaymentMethod(Ride ride) {
+        if (ride.getPaymentMethodId().equals(PaymentMethod.BALANCE.getId())) {
+            validatePassengerBalance(ride.getPassengerId());
+        }
+    }
+
+    private void validatePassengerBalance(Long passengerId) {
+        IsBalancePositiveResponse isBalancePositiveResponse = paymentServiceClient.getIsBalancePositiveById(passengerId);
+        if (!passengerId.equals(isBalancePositiveResponse.balanceUserId())) {
+            throw new InternalServiceException();
+        }
+        if (!isBalancePositiveResponse.isBalancePositive()) {
+            throw new PositiveBalanceRequiredException();
+        }
     }
 
     @Override
@@ -81,7 +110,22 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
         ride.setStatusId(RideStatus.FINISHED.getId());
         ride.setFinishedTime(LocalDateTime.now());
         Ride savedRide = rideRepository.save(ride);
+        processPaymentIfRequired(savedRide);
         return mapper.map(savedRide, RideResponseDto.class);
+    }
+
+    private void processPaymentIfRequired(Ride ride) {
+        if (ride.getPaymentMethodId().equals(PaymentMethod.BALANCE.getId())) {
+            publishPaymentInfoToKafka(ride.getPassengerId(), ride.getPrice());
+        }
+    }
+
+    private void publishPaymentInfoToKafka(Long passengerId, BigDecimal price) {
+        PaymentProcessMessage paymentProcessMessage = PaymentProcessMessage.builder()
+                .userId(passengerId)
+                .amount(price)
+                .build();
+        paymentProducer.sendMessage(paymentProcessMessage);
     }
 
     @Override
