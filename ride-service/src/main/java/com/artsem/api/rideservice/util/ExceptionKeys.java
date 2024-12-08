@@ -9,4 +9,6 @@ public class ExceptionKeys {
     public static final String INVALID_API_RESPONSE = "invalid-api-response";
     public static final String INVALID_API_ELEMENT_RESPONSE = "invalid-api-element-response";
     public static final String PICKUP_AND_DROP_OFF_REQUIRED = "picker-and-drop-off-required";
+    public static final String POSITIVE_BALANCE_REQUIRED = "positive-balance-required";
+    public static final String INTERNAL_SERVER_EXCEPTION = "internal-server-exception";
 }

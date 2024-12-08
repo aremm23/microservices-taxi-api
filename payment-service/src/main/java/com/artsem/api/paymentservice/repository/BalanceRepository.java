@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface BalanceRepository extends JpaRepository<Balance, Long> {
     boolean existsByUserId(Long userId);
 
+    Optional<Balance> getByUserId(Long userId);
+
     @Query("SELECT CASE WHEN b.amount > 0 THEN true ELSE false END FROM Balance b WHERE b.userId = :userId")
     Optional<Boolean> isBalancePositiveByUserId(@Param("userId") Long userId);
 }
