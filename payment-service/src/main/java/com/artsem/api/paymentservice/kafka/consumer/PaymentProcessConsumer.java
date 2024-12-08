@@ -1,8 +1,8 @@
 package com.artsem.api.paymentservice.kafka.consumer;
 
+import com.artsem.api.paymentservice.kafka.PaymentProcessMessage;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
-import com.artsem.api.rideservice.kafka.PaymentProcessMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

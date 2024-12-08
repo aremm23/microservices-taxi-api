@@ -1,7 +1,7 @@
 package com.artsem.api.paymentservice.service.impl;
 
 import com.artsem.api.paymentservice.exceptions.StripeSessionException;
-import com.artsem.api.paymentservice.exceptions.UnableParseJsonException;
+import com.artsem.api.paymentservice.exceptions.UnableParseMessageException;
 import com.artsem.api.paymentservice.exceptions.UnableVerifyWebhookSignatureException;
 import com.artsem.api.paymentservice.model.dto.response.CapturePaymentResponseDto;
 import com.artsem.api.paymentservice.model.dto.response.StripeResponseDto;
@@ -179,7 +179,7 @@ public class StripeServiceImpl implements StripeService {
         try {
             return objectMapper.readTree(payload);
         } catch (JsonProcessingException e) {
-            throw new UnableParseJsonException(e.getMessage());
+            throw new UnableParseMessageException(e.getMessage());
         }
     }
 
