@@ -2,7 +2,7 @@ package com.artsem.api.reviewservice.service.impl;
 
 import com.artsem.api.reviewservice.exceptions.InvalidRideForReviewException;
 import com.artsem.api.reviewservice.feign.client.RideResponseDto;
-import com.artsem.api.reviewservice.feign.client.RideServiceClient;
+import com.artsem.api.reviewservice.feign.client.RideServiceClientAdapter;
 import com.artsem.api.reviewservice.model.ReviewType;
 import com.artsem.api.reviewservice.model.dto.request.ReviewRequestDto;
 import com.artsem.api.reviewservice.service.RideService;
@@ -18,11 +18,11 @@ public class RideServiceImpl implements RideService {
     private static final int FINISHED_STATUS_ID = 4;
     private static final int MAX_REVIEW_PERIOD_DAYS = 1;
 
-    private final RideServiceClient rideServiceClient;
+    private final RideServiceClientAdapter rideServiceClientAdapter;
 
     @Override
     public RideResponseDto getRideResponse(String rideId) {
-        return rideServiceClient.getRideById(rideId);
+        return rideServiceClientAdapter.getRideById(rideId);
     }
 
     @Override
