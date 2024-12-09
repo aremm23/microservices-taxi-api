@@ -18,17 +18,13 @@ public class RatingController implements RatingApi {
     private final RatingService ratingService;
 
     @GetMapping("/driver/{id}")
-    public ResponseEntity<RatingResponseDto> getDriverRating(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<RatingResponseDto> getDriverRating(@PathVariable Long id  ) {
         RatingResponseDto ratingResponseDto = ratingService.getDriverRating(id);
         return ResponseEntity.ok(ratingResponseDto);
     }
 
     @GetMapping("/passenger/{id}")
-    public ResponseEntity<RatingResponseDto> getPassengerRating(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<RatingResponseDto> getPassengerRating(@PathVariable Long id) {
         RatingResponseDto ratingResponseDto = ratingService.getPassengerRating(id);
         return ResponseEntity.ok(ratingResponseDto);
     }

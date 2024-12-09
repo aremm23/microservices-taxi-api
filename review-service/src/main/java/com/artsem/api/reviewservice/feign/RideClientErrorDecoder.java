@@ -5,18 +5,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
-public class CustomErrorDecoder implements ErrorDecoder {
+@RequiredArgsConstructor
+public class RideClientErrorDecoder implements ErrorDecoder {
 
     private static final String RIDE_NOT_FOUND_MESSAGE = "Ride not found.";
     private static final String MESSAGE_FIELD = "message";
     private static final int RESPONSE_NOT_FOUND_CODE = 404;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public Exception decode(String methodKey, Response response) {
