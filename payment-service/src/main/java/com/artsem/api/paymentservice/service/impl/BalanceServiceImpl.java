@@ -51,6 +51,13 @@ public class BalanceServiceImpl implements BalanceService {
         return mapper.map(balance, BalanceResponseDto.class);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public BalanceResponseDto getByUserId(Long userId) {
+        Balance balance = balanceRepository.getByUserId(userId).orElseThrow();
+        return mapper.map(balance, BalanceResponseDto.class);
+    }
+
     @Transactional
     @Override
     public BalanceResponseDto initBalance(Long userId) {

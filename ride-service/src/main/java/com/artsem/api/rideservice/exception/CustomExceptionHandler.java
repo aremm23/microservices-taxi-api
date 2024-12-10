@@ -26,7 +26,9 @@ public class CustomExceptionHandler {
             InvalidRideStatusException.class,
             InvalidResponseElementException.class,
             InvalidResponseException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            PositiveBalanceRequiredException.class,
+            InternalServiceException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
         String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());

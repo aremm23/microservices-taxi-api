@@ -9,6 +9,8 @@ public interface BalanceService {
 
     BalanceResponseDto getById(Long id);
 
+    BalanceResponseDto getByUserId(Long userId);
+
     BalanceResponseDto initBalance(Long userId);
 
     void delete(Long id);

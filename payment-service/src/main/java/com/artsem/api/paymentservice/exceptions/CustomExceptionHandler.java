@@ -64,8 +64,8 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UnableParseJsonException.class)
-    public ResponseEntity<ErrorResponse> handleUnableParseJsonExceptions(UnableParseJsonException ex) {
+    @ExceptionHandler(UnableParseMessageException.class)
+    public ResponseEntity<ErrorResponse> handleUnableParseJsonExceptions(UnableParseMessageException ex) {
         return new ResponseEntity<>(
                 createErrorResponse(resolveUnableParseJsonExceptionInfo(ex)),
                 HttpStatus.BAD_REQUEST
@@ -104,7 +104,7 @@ public class CustomExceptionHandler {
         );
     }
 
-    private String resolveUnableParseJsonExceptionInfo(UnableParseJsonException ex) {
+    private String resolveUnableParseJsonExceptionInfo(UnableParseMessageException ex) {
         return messageSource.getMessage(
                 Objects.requireNonNull(ex.getMessage()),
                 new Object[]{ex.getJsonProcessingExceptionMessage()},
