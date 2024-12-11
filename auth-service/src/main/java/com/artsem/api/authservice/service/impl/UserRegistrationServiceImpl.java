@@ -1,5 +1,6 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.broker.producer.UserCreatedProducer;
 import com.artsem.api.authservice.exception.InvalidUserRoleException;
 import com.artsem.api.authservice.model.UserCreateMessage;
 import com.artsem.api.authservice.model.UserRegisterDto;
@@ -8,7 +9,6 @@ import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.RoleService;
 import com.artsem.api.authservice.service.UserRegistrationService;
-import com.artsem.api.authservice.service.rabbit.RabbitSender;
 import com.artsem.api.authservice.util.KeycloakGroup;
 import com.artsem.api.authservice.util.KeycloakRole;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserRegistrationServiceImpl implements UserRegistrationService {
 
+    public static final String PASSENGER_ROLE_LOWERCASE = "passenger";
+    public static final String DRIVER_ROLE_LOWERCASE = "driver";
+
     private final KeycloakService keycloakService;
 
     private final RoleService roleService;
 
     private final GroupService groupService;
 
-    private final RabbitSender rabbitSender;
+    private final UserCreatedProducer userCreatedProducer;
 
     private UserResource registerUserInKeycloak(UserRegisterDto userRegisterDto) {
         return keycloakService.createUser(userRegisterDto);
@@ -47,21 +50,20 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         UserResource createdUser = registerUserInKeycloak(userRegisterDto);
         roleService.assignRole(KeycloakRole.PASSENGER, createdUser);
         groupService.assignGroupToUser(KeycloakGroup.PASSENGER, createdUser);
-        rabbitSender.sendPassenger(buildUserCreateMessage(createdUser));
+        userCreatedProducer.publishUserCreatedEvent(PASSENGER_ROLE_LOWERCASE, buildUserCreateMessage(createdUser));
     }
 
     private void createDriver(UserRegisterDto userRegisterDto) {
         UserResource createdUser = registerUserInKeycloak(userRegisterDto);
         roleService.assignRole(KeycloakRole.DRIVER, createdUser);
         groupService.assignGroupToUser(KeycloakGroup.DRIVER, createdUser);
-        rabbitSender.sendDriver(buildUserCreateMessage(createdUser));
+        userCreatedProducer.publishUserCreatedEvent(DRIVER_ROLE_LOWERCASE, buildUserCreateMessage(createdUser));
     }
 
     public void createAdmin(UserRegisterDto userRegisterDto) {
         UserResource createdUser = registerUserInKeycloak(userRegisterDto);
         groupService.assignGroupToUser(KeycloakGroup.MANAGER, createdUser);
         roleService.assignRole(KeycloakRole.ADMIN, createdUser);
-        // TODO: to be implemented
     }
 
     private UserCreateMessage buildUserCreateMessage(UserResource createdUser) {

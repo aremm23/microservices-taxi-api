@@ -1,12 +1,13 @@
 package com.artsem.api.authservice.service.impl;
 
+import com.artsem.api.authservice.broker.EmailVerificationMessage;
+import com.artsem.api.authservice.broker.producer.EmailVerifyNotificationProducer;
 import com.artsem.api.authservice.exception.UserNotFoundException;
 import com.artsem.api.authservice.model.UserIdsMessage;
 import com.artsem.api.authservice.model.UserLoginRecord;
 import com.artsem.api.authservice.model.UserRegisterDto;
 import com.artsem.api.authservice.service.JwtService;
 import com.artsem.api.authservice.service.KeycloakService;
-import com.artsem.api.authservice.service.kafka.producer.NotificationProducer;
 import com.artsem.api.authservice.util.ExceptionKeys;
 import com.artsem.api.authservice.util.StatusCodeValidator;
 import jakarta.ws.rs.core.Response;
@@ -38,7 +39,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     private final CredentialRepresentation credentialRepresentation;
 
-    private final NotificationProducer notificationProducer;
+    private final EmailVerifyNotificationProducer emailVerifyNotificationProducer;
 
     private final JwtService jwtService;
 
@@ -52,7 +53,8 @@ public class KeycloakServiceImpl implements KeycloakService {
             UsersResource usersResource,
             UserRepresentation userRepresentation,
             CredentialRepresentation credentialRepresentation,
-            NotificationProducer notificationProducer, JwtService jwtService,
+            EmailVerifyNotificationProducer emailVerifyNotificationProducer,
+            JwtService jwtService,
             @Value("${app.keycloak.server-url}") String serverUrl,
             @Value("${app.keycloak.user.client-id}") String userClientId,
             @Value("${app.keycloak.realm}") String realm
@@ -60,7 +62,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         this.usersResource = usersResource;
         this.userRepresentation = userRepresentation;
         this.credentialRepresentation = credentialRepresentation;
-        this.notificationProducer = notificationProducer;
+        this.emailVerifyNotificationProducer = emailVerifyNotificationProducer;
         this.jwtService = jwtService;
         this.serverUrl = serverUrl;
         this.userClientId = userClientId;
@@ -118,8 +120,17 @@ public class KeycloakServiceImpl implements KeycloakService {
     public void sendVerificationEmail(String userId) {
         UserRepresentation user = findUserById(userId).toRepresentation();
         String confirmationToken = jwtService.generateEmailConfirmationToken(user.getEmail());
-        notificationProducer.sendEmailVerificationMessage(user.getEmail(), confirmationToken);
-        log.info("Sending verification email: {}", confirmationToken);
+        emailVerifyNotificationProducer.publishEmailVerifyMessage(buildEmailVerificationMessage(
+                user.getEmail(),
+                confirmationToken
+        ));
+    }
+
+    private EmailVerificationMessage buildEmailVerificationMessage(String email, String confirmationToken) {
+        return EmailVerificationMessage.builder()
+                .email(email)
+                .token(confirmationToken)
+                .build();
     }
 
     @Override
