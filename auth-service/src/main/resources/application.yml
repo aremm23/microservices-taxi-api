@@ -1,6 +1,12 @@
 spring:
   application:
     name: auth-service
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    username: guest
+    password: guest
+    port: ${RABBIT_PORT:5672}
+
 server:
   port: 8081
 
@@ -18,6 +24,13 @@ app:
 jwt:
   secret: ${JWT_SECRET:n4EpjnNy7x8FjfwYMDjPi8xYyL0EocN1uzUsfFTbLhk=}
   expire: 3
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
 
 springdoc:
   api-docs:
