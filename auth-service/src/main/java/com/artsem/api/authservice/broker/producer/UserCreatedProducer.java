@@ -1,6 +1,5 @@
 package com.artsem.api.authservice.broker.producer;
 
-import com.artsem.api.authservice.config.RabbitConfig;
 import com.artsem.api.authservice.config.RabbitQueueConfig;
 import com.artsem.api.authservice.model.UserCreateMessage;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserCreatedProducer {
 
+    public static final String USER_CREATED_KEY_TEMPLATE = "user.%s.created";
+
     private final AmqpTemplate amqpTemplate;
 
     public void publishUserCreatedEvent(String role, UserCreateMessage message) {
-        String routingKeyTemplate = "user.%s.created";
-        String routingKey = routingKeyTemplate.formatted(role);
+        String routingKey = USER_CREATED_KEY_TEMPLATE.formatted(role);
         try {
             amqpTemplate.convertAndSend(RabbitQueueConfig.USER_EXCHANGE, routingKey, message);
             log.info("Successfully sent {} created message: {}", role, message);
