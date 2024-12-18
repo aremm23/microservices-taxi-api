@@ -1,7 +1,7 @@
-package com.artsem.api.authservice.util;
+package com.artsem.api.authservice.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -15,20 +15,30 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     @Override
-    @SneakyThrows(VerificationException.class)
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        AccessToken token = TokenVerifier.create(jwt.getTokenValue(), AccessToken.class).getToken();
-        Collection<GrantedAuthority> authorities = token.getRealmAccess().getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toSet());
-        return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim(JwtClaimNames.SUB));
-    }
+        try {
+            AccessToken token = TokenVerifier.create(jwt.getTokenValue(), AccessToken.class).getToken();
+            AccessToken.Access realmAccess = token.getRealmAccess();
 
+            Collection<GrantedAuthority> authorities = (realmAccess == null || realmAccess.getRoles() == null)
+                    ? Collections.emptySet()
+                    : realmAccess.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(SecurityConstants.ROLE_PREFIX + role))
+                    .collect(Collectors.toSet());
+
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim(JwtClaimNames.SUB));
+        } catch (VerificationException e) {
+            log.error("Failed to verify JWT token: {}", jwt.getTokenValue(), e);
+            throw new IllegalArgumentException("Invalid JWT token", e);
+        }
+    }
 }

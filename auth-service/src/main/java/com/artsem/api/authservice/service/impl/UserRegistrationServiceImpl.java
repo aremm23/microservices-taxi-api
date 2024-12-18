@@ -1,9 +1,12 @@
 package com.artsem.api.authservice.service.impl;
 
 import com.artsem.api.authservice.broker.producer.UserCreatedProducer;
+import com.artsem.api.authservice.config.RegisterMapper;
 import com.artsem.api.authservice.exception.InvalidUserRoleException;
+import com.artsem.api.authservice.model.AdminRegisterRequestDto;
 import com.artsem.api.authservice.model.UserCreateMessage;
 import com.artsem.api.authservice.model.UserRegisterDto;
+import com.artsem.api.authservice.model.UserRegisterRequestDto;
 import com.artsem.api.authservice.model.UserRole;
 import com.artsem.api.authservice.service.GroupService;
 import com.artsem.api.authservice.service.KeycloakService;
@@ -36,11 +39,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
     @Override
-    public void createUser(UserRegisterDto userRegisterDto) {
-        if (userRegisterDto.getUserRole() == UserRole.PASSENGER) {
-            createPassenger(userRegisterDto);
-        } else if (userRegisterDto.getUserRole() == UserRole.DRIVER) {
-            createDriver(userRegisterDto);
+    public void createUser(UserRegisterRequestDto userRegisterRequestDto) {
+        if (userRegisterRequestDto.userRole() == UserRole.PASSENGER) {
+            createPassenger(RegisterMapper.INSTANCE.toUserRegisterDto(userRegisterRequestDto));
+        } else if (userRegisterRequestDto.userRole() == UserRole.DRIVER) {
+            createDriver(RegisterMapper.INSTANCE.toUserRegisterDto(userRegisterRequestDto));
         } else {
             throw new InvalidUserRoleException();
         }
@@ -60,8 +63,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         userCreatedProducer.publishUserCreatedEvent(DRIVER_ROLE_LOWERCASE, buildUserCreateMessage(createdUser));
     }
 
-    public void createAdmin(UserRegisterDto userRegisterDto) {
-        UserResource createdUser = registerUserInKeycloak(userRegisterDto);
+    @Override
+    public void createAdmin(AdminRegisterRequestDto adminRegisterRequestDto) {
+        UserResource createdUser = registerUserInKeycloak(RegisterMapper.INSTANCE.toUserRegisterDto(adminRegisterRequestDto));
         groupService.assignGroupToUser(KeycloakGroup.MANAGER, createdUser);
         roleService.assignRole(KeycloakRole.ADMIN, createdUser);
     }
