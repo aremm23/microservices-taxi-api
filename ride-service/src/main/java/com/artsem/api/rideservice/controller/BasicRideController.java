@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +29,7 @@ public class BasicRideController implements BasicRideControllerApi {
 
     private final RideBasicService rideBasicService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<PagedModel<RideResponseDto>> getList(
             @ModelAttribute
@@ -38,15 +40,20 @@ public class BasicRideController implements BasicRideControllerApi {
         return ResponseEntity.ok(new PagedModel<>(rideResponseDtos));
     }
 
+    @PreAuthorize("""
+            (hasRole('ROLE_PASSENGER') &&
+            @userAccessValidator.isPassengerAuthorizedForRideId(#id, authentication)) ||
+            (hasRole('ROLE_DRIVER') &&
+            @userAccessValidator.isDriverAuthorizedForRideId(#id, authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @GetMapping("/{id}")
-    public ResponseEntity<RideResponseDto> getById(
-            @PathVariable
-            String id
-    ) {
+    public ResponseEntity<RideResponseDto> getById(@PathVariable String id) {
         RideResponseDto ride = rideBasicService.getById(id);
         return ResponseEntity.ok(ride);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<RideResponseDto> create(
             @Valid
@@ -59,11 +66,9 @@ public class BasicRideController implements BasicRideControllerApi {
                 .body(createdRide);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable
-            String id
-    ) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         rideBasicService.delete(id);
         return ResponseEntity
                 .noContent()

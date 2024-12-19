@@ -18,11 +18,23 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       bootstrap-servers: localhost:9092
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
 kafka:
   topic:
     payment-process-topic:
       replicas: 1
       partitions: 1
+
+keycloak:
+  client-id: ride-service
+  client-secret: eno6w0hmGrFH53JobosMsDwTPISx1oI7
+  auth-server-url: http://localhost:9082/realms/taxi-app-realm/protocol/openid-connect/token
 
 eureka:
   client:
@@ -33,6 +45,8 @@ eureka:
 
 cache:
   passenger-id:
+    ttl-hours: 3
+  driver-id:
     ttl-hours: 3
   distance-and-duration:
     ttl-seconds: 30
