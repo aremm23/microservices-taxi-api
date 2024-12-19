@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,32 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class OpenAPIConfiguration {
 
-    private final String serverUrl;
-    private final String serverDescription;
-    private final String contactName;
-    private final String contactEmail;
-    private final String apiTitle;
-    private final String apiVersion;
-    private final String apiDescription;
-
-    public OpenAPIConfiguration(
-            @Value("${openapi.server.url}") String serverUrl,
-            @Value("${openapi.server.description}") String serverDescription,
-            @Value("${openapi.contact.name}") String contactName,
-            @Value("${openapi.contact.email}") String contactEmail,
-            @Value("${openapi.info.title}") String apiTitle,
-            @Value("${openapi.info.version}") String apiVersion,
-            @Value("${openapi.info.description}") String apiDescription) {
-        this.serverUrl = serverUrl;
-        this.serverDescription = serverDescription;
-        this.contactName = contactName;
-        this.contactEmail = contactEmail;
-        this.apiTitle = apiTitle;
-        this.apiVersion = apiVersion;
-        this.apiDescription = apiDescription;
-    }
+    private final OpenAPIProperties properties;
 
     @Bean
     public OpenAPI defineOpenApi() {
@@ -49,24 +28,26 @@ public class OpenAPIConfiguration {
     }
 
     private Info getApiInfo() {
+        OpenAPIProperties.InfoProperties info = properties.getInfo();
         return new Info()
-                .title(apiTitle)
-                .version(apiVersion)
-                .description(apiDescription)
+                .title(info.getTitle())
+                .version(info.getVersion())
+                .description(info.getDescription())
                 .contact(getContact());
     }
 
     private Contact getContact() {
-        Contact contact = new Contact();
-        contact.setName(contactName);
-        contact.setEmail(contactEmail);
-        return contact;
+        OpenAPIProperties.ContactProperties contact = properties.getContact();
+        return new Contact()
+                .name(contact.getName())
+                .email(contact.getEmail());
     }
 
     private List<Server> getServers() {
-        Server server = new Server();
-        server.setUrl(serverUrl);
-        server.setDescription(serverDescription);
+        OpenAPIProperties.ServerProperties serverProperties = properties.getServer();
+        Server server = new Server()
+                .url(serverProperties.getUrl())
+                .description(serverProperties.getDescription());
         return List.of(server);
     }
 

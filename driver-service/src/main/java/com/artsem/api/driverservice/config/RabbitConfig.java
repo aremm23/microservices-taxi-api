@@ -16,11 +16,11 @@ import java.util.Map;
 @Configuration
 public class RabbitConfig {
 
-    public static final String USER_CALLBACK_KEY = "user.callback";
+    /*public static final String USER_CALLBACK_KEY = "user.callback";
     public static final String USER_ROLLBACK_KEY = "user.rollback";
     public static final String DRIVER_CREATED_QUEUE = "driver-created-queue";
     public static final String CALLBACK_EXCHANGE = "auth.callback.exchange";
-    public static final String ROLLBACK_EXCHANGE = "auth.rollback.exchange";
+    public static final String ROLLBACK_EXCHANGE = "auth.rollback.exchange";*/
     public static final Map<String, Class<?>> MESSAGE_MAPPINGS = Map.of(
             "com.artsem.api.authservice.model.UserCreateMessage", UserCreateMessage.class
     );

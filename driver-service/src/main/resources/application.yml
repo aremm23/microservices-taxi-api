@@ -34,6 +34,16 @@ springdoc:
     path: /driver-service-docs/swagger-ui
     enabled: true
 
+rabbitmq:
+  exchanges:
+    callback: "auth.callback.exchange"
+    rollback: "auth.rollback.exchange"
+  queues:
+    driverCreated: "driver-created-queue"
+  keys:
+    userCallback: "user.callback"
+    userRollback: "user.rollback"
+
 eureka:
   client:
     register-with-eureka: true

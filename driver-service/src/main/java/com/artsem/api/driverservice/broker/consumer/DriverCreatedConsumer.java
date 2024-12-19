@@ -15,7 +15,7 @@ public class DriverCreatedConsumer {
 
     private final AuthInteractionService authInteractionService;
 
-    @RabbitListener(queues = RabbitConfig.DRIVER_CREATED_QUEUE)
+    @RabbitListener(queues = "${rabbitmq.queues.driverCreated}")
     public void receiveDriverCreatedMessage(UserCreateMessage userCreateMessage) {
         log.info("Received driver created message: {}", userCreateMessage);
         authInteractionService.createDriver(userCreateMessage);
