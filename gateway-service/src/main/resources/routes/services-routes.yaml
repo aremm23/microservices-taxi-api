@@ -1,0 +1,69 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth_route
+          uri: lb://auth-service
+          predicates:
+            - name: Path
+              args:
+                pattern: /api/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: auth-service-circuit
+                fallbackUri: forward:/fallback/auth-service
+
+        - id: passenger_route
+          uri: lb://passenger-service
+          predicates:
+            - name: Path
+              args:
+                pattern: /api/v1/passengers/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: passenger-service-circuit
+                fallbackUri: forward:/fallback/passenger-service
+
+        - id: driver_route
+          uri: lb://driver-service
+          predicates:
+            - Path=/api/v1/drivers/**, /api/v1/cars/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: driver-service-circuit
+                fallbackUri: forward:/fallback/driver-service
+
+        - id: ride_route
+          uri: lb://ride-service
+          predicates:
+            - name: Path
+              args:
+                pattern: /api/v1/rides/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ride-service-circuit
+                fallbackUri: forward:/fallback/ride-service
+
+        - id: review_route
+          uri: lb://review-service
+          predicates:
+            - Path=api/v1/reviews/**, /api/v1/rating/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: review-service-circuit
+                fallbackUri: forward:/fallback/review-service
+
+        - id: payment_route
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/users/{userId}/balance/**, /api/v1/balances/**, /api/v1/payment/**, /api/v1/webhook/success
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: payment-service-circuit
+                fallbackUri: forward:/fallback/payment-service
