@@ -27,7 +27,7 @@ public class JwtServiceImpl implements JwtService {
 
     public JwtServiceImpl(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expire}") int jwtExpireMin
+            @Value("${jwt.expire.minutes}") int jwtExpireMin
     ) {
         this.secretKey = secretKey;
         this.jwtExpireMin = jwtExpireMin;

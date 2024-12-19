@@ -90,7 +90,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         try (Response response = usersResource.create(userRepresentation)) {
             validateResponse(response);
         }
-        var createdUser = usersResource.search(userRegisterDto.getUsername()).get(0);
+        var createdUser = usersResource.search(userRegisterDto.username()).get(0);
         sendVerificationEmail(createdUser.getId());
         return findUserById(createdUser.getId());
     }
@@ -142,13 +142,13 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     public void setUserRepresentation(UserRegisterDto userRegisterDto) {
         userRepresentation.setEnabled(true);
-        userRepresentation.setUsername(userRegisterDto.getUsername());
-        userRepresentation.setEmail(userRegisterDto.getEmail());
-        userRepresentation.setFirstName(userRegisterDto.getFirstname());
-        userRepresentation.setLastName(userRegisterDto.getLastname());
+        userRepresentation.setUsername(userRegisterDto.username());
+        userRepresentation.setEmail(userRegisterDto.email());
+        userRepresentation.setFirstName(userRegisterDto.firstname());
+        userRepresentation.setLastName(userRegisterDto.lastname());
         userRepresentation.setCreatedTimestamp(System.currentTimeMillis());
         userRepresentation.setEmailVerified(false);
-        credentialRepresentation.setValue(userRegisterDto.getPassword());
+        credentialRepresentation.setValue(userRegisterDto.password());
         credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
         userRepresentation.setCredentials(List.of(credentialRepresentation));
     }

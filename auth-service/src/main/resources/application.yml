@@ -3,9 +3,15 @@ spring:
     name: auth-service
   rabbitmq:
     host: ${RABBIT_HOST:localhost}
-    username: guest
-    password: guest
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
     port: ${RABBIT_PORT:5672}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
 server:
   port: 8081
@@ -23,7 +29,8 @@ app:
 
 jwt:
   secret: ${JWT_SECRET:n4EpjnNy7x8FjfwYMDjPi8xYyL0EocN1uzUsfFTbLhk=}
-  expire: 3
+  expire:
+    minutes: 3
 
 eureka:
   client:
@@ -39,3 +46,15 @@ springdoc:
   swagger-ui:
     path: /auth-service-docs/swagger-ui
     enabled: true
+
+openapi:
+  server:
+    url: http://localhost:8081
+    description: Auth service
+  contact:
+    name: Artsem Maiseyenka
+    email: artsem.maiseyenka@gmail.com
+  info:
+    title: Auth Service
+    version: 1.0
+    description: This API exposes endpoints to manage users

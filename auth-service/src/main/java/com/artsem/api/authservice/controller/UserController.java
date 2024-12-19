@@ -1,19 +1,19 @@
 package com.artsem.api.authservice.controller;
 
+import com.artsem.api.authservice.controller.api.UserApi;
 import com.artsem.api.authservice.service.KeycloakService;
 import com.artsem.api.authservice.service.RoleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,51 +21,49 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-@Tag(name = "User Controller", description = "API for managing users in Keycloak")
-public class UserController {
+public class UserController implements UserApi {
 
     private final KeycloakService keycloakService;
-
     private final RoleService roleService;
 
-    @Operation(summary = "Get roles of a user", description = "Retrieve all roles assigned to a user by user ID")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}/roles")
+    @Override
     public ResponseEntity<List<RoleRepresentation>> getRoles(
-            @Parameter(description = "ID of the user to retrieve roles for")
-            @PathVariable
-            String id
+            @PathVariable String id
     ) {
         return ResponseEntity.ok(roleService.getAllUserRoles(keycloakService.findUserById(id)));
     }
 
-    @Operation(summary = "Send verification email", description = "Send a verification email to a user by user ID")
+    @PreAuthorize("""
+            (hasAnyRole('ROLE_PASSENGER', 'ROLE_DRIVER') &&
+            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @PatchMapping("/{id}/verify-email")
+    @Override
     public ResponseEntity<HttpStatus> sendVerifyEmail(
-            @Parameter(description = "ID of the user to send the verification email to")
-            @PathVariable
-            String id
+            @PathVariable String id
     ) {
         keycloakService.sendVerificationEmail(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @Operation(summary = "Delete a user", description = "Delete a user from the system by user ID")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
+    @Override
     public ResponseEntity<HttpStatus> deleteUser(
-            @Parameter(description = "ID of the user to delete")
-            @PathVariable
-            String id
+            @PathVariable String id
     ) {
         keycloakService.deleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Operation(summary = "Confirm an email", description = "Confirm user email with token")
-    @PatchMapping("/confirm-email/{token}")
+    @PatchMapping("/confirm-email")
+    @Override
     public ResponseEntity<HttpStatus> confirmEmail(
-            @Parameter(description = "Email confirmation token")
-            @PathVariable
-            String token) {
+            @RequestParam String token
+    ) {
         keycloakService.confirmEmailStatus(token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
