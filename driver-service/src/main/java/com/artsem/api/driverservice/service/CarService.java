@@ -4,8 +4,8 @@ package com.artsem.api.driverservice.service;
 import com.artsem.api.driverservice.filter.CarFilter;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.response.CarResponseDto;
-import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.CarResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

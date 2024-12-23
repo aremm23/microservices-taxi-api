@@ -1,4 +1,4 @@
-package com.artsem.api.driverservice.model.dto.response;
+package com.artsem.api.driverservice.model.dto.responce;
 
 import lombok.Builder;
 

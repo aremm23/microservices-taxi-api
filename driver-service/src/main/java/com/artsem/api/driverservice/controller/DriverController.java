@@ -1,16 +1,16 @@
 package com.artsem.api.driverservice.controller;
 
-import com.artsem.api.driverservice.controller.api.DriverApi;
 import com.artsem.api.driverservice.filter.DriverFilter;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.response.DriverAndCarResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverEmailResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverStatusResponseDto;
-import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import com.artsem.api.driverservice.service.DriverService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,77 +34,76 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/drivers")
 @RequiredArgsConstructor
-public class DriverController implements DriverApi {
+@Tag(name = "Driver Controller", description = "API for managing drivers in the driver service")
+public class DriverController {
 
     private final DriverService driverService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Get a list of drivers", description = "Retrieve a paginated list of drivers with optional filters")
     @GetMapping
     public ResponseEntity<PagedModel<DriverResponseDto>> getList(
+            @Parameter(description = "Filters for driver search")
             @ModelAttribute
             DriverFilter filter,
+            @Parameter(description = "Pagination information")
             Pageable pageable
     ) {
         Page<DriverResponseDto> driverResponseDtos = driverService.getList(filter, pageable);
         return ResponseEntity.ok(new PagedModel<>(driverResponseDtos));
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
-            """)
+    @Operation(summary = "Get driver details by ID", description = "Retrieve detailed information about a specific driver")
     @GetMapping("/{id}")
-    public ResponseEntity<DriverResponseDto> getOne(@PathVariable Long id) {
+    public ResponseEntity<DriverResponseDto> getOne(
+            @Parameter(description = "ID of the driver to retrieve")
+            @PathVariable
+            Long id
+    ) {
         DriverResponseDto driver = driverService.getOne(id);
         return ResponseEntity.ok(driver);
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasAnyRole('ROLE_ADMIN', 'ROLE_NOTIFICATION_SERVICE')
-            """)
-    @GetMapping("/{id}/email")
-    public ResponseEntity<DriverEmailResponseDto> getEmailById(@PathVariable Long id) {
-        DriverEmailResponseDto driver = driverService.getEmailById(id);
-        return ResponseEntity.ok(driver);
-    }
-
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
-            """)
+    @Operation(summary = "Get driver details with car by ID", description = "Retrieve detailed information about a driver along with assigned car")
     @GetMapping("/{id}/car")
-    public ResponseEntity<DriverAndCarResponseDto> getOneWithCar(@PathVariable Long id) {
+    public ResponseEntity<DriverAndCarResponseDto> getOneWithCar(
+            @Parameter(description = "ID of the driver to retrieve")
+            @PathVariable
+            Long id
+    ) {
         DriverAndCarResponseDto driver = driverService.getOneWithCar(id);
         return ResponseEntity.ok(driver);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Get multiple drivers by IDs", description = "Retrieve detailed information about multiple drivers")
     @GetMapping("/by-ids")
-    public ResponseEntity<ListResponseDto<DriverResponseDto>> getMany(@RequestParam List<Long> ids) {
+    public ResponseEntity<ListResponseDto<DriverResponseDto>> getMany(
+            @Parameter(description = "List of driver IDs to retrieve")
+            @RequestParam
+            List<Long> ids
+    ) {
         ListResponseDto<DriverResponseDto> drivers = driverService.getMany(ids);
         return ResponseEntity.ok(drivers);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Create a new driver", description = "Create and register a new driver in the system")
     @PostMapping
-    public ResponseEntity<DriverResponseDto> create(@Valid @RequestBody DriverRequestDto driverDto) {
+    public ResponseEntity<DriverResponseDto> create(
+            @Parameter(description = "Details of the driver to create")
+            @Valid
+            @RequestBody
+            DriverRequestDto driverDto
+    ) {
         DriverResponseDto createdDriver = driverService.create(driverDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDriver);
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
-            """)
+    @Operation(summary = "Update driver details", description = "Update the information of an existing driver")
     @PatchMapping("/{id}")
     public ResponseEntity<DriverResponseDto> patch(
+            @Parameter(description = "ID of the driver to update")
             @PathVariable
             Long id,
+            @Parameter(description = "Updated driver details")
             @Valid
             @RequestBody
             DriverUpdateRequestDto driverDto
@@ -114,33 +112,35 @@ public class DriverController implements DriverApi {
         return ResponseEntity.ok(updatedDriver);
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
-            """)
+    @Operation(summary = "Delete a driver by ID", description = "Remove a driver from the system by its ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID of the driver to delete")
+            @PathVariable
+            Long id
+    ) {
         driverService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Delete multiple drivers by IDs", description = "Remove multiple drivers from the system by their IDs")
     @DeleteMapping
-    public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
+    public ResponseEntity<Void> deleteMany(
+            @Parameter(description = "List of driver IDs to delete")
+            @RequestParam
+            List<Long> ids
+    ) {
         driverService.deleteMany(ids);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
-            """)
+    @Operation(summary = "Update driver status", description = "Update the status of an existing driver")
     @PatchMapping("/{id}/status")
     public ResponseEntity<DriverResponseDto> updateDriverStatus(
+            @Parameter(description = "ID of the driver to update")
             @PathVariable
             Long id,
+            @Parameter(description = "New status for the driver")
             @RequestBody
             DriverStatusUpdateRequestDto statusUpdateDto
     ) {
@@ -148,22 +148,13 @@ public class DriverController implements DriverApi {
         return ResponseEntity.ok(updatedDriver);
     }
 
-    @PreAuthorize("""
-            (hasRole('ROLE_DRIVER') &&
-            @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasAnyRole('ROLE_ADMIN', 'ROLE_RIDE_SERVICE')
-            """)
-    @GetMapping("/{id}/status")
-    public ResponseEntity<DriverStatusResponseDto> getDriverStatus(@PathVariable Long id) {
-        DriverStatusResponseDto driverStatusResponseDto = driverService.getDriverStatus(id);
-        return ResponseEntity.ok(driverStatusResponseDto);
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Assign a car to a driver", description = "Assign an existing car to a driver")
     @PatchMapping("/{driverId}/car/{carId}")
     public ResponseEntity<DriverAndCarResponseDto> assignCarToDriver(
+            @Parameter(description = "ID of the driver")
             @PathVariable
             Long driverId,
+            @Parameter(description = "ID of the car to assign")
             @PathVariable
             Long carId
     ) {
@@ -171,9 +162,13 @@ public class DriverController implements DriverApi {
         return ResponseEntity.ok(updatedDriver);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Remove a car from a driver", description = "Unassign the currently assigned car from a driver")
     @DeleteMapping("/{driverId}/car")
-    public ResponseEntity<DriverAndCarResponseDto> removeCarFromDriver(@PathVariable Long driverId) {
+    public ResponseEntity<DriverAndCarResponseDto> removeCarFromDriver(
+            @Parameter(description = "ID of the driver")
+            @PathVariable
+            Long driverId
+    ) {
         DriverAndCarResponseDto updatedDriver = driverService.removeCarFromDriver(driverId);
         return ResponseEntity.ok(updatedDriver);
     }

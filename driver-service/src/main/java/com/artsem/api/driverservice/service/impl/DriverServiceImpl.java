@@ -12,11 +12,9 @@ import com.artsem.api.driverservice.model.Driver;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.response.DriverAndCarResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverEmailResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverResponseDto;
-import com.artsem.api.driverservice.model.dto.response.DriverStatusResponseDto;
-import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
 import com.artsem.api.driverservice.repository.CarRepository;
 import com.artsem.api.driverservice.repository.DriverRepository;
 import com.artsem.api.driverservice.service.DriverService;
@@ -66,26 +64,6 @@ public class DriverServiceImpl implements DriverService {
         return ListResponseDto.<DriverResponseDto>builder()
                 .size(dtosList.size())
                 .list(dtosList)
-                .build();
-    }
-
-    @Override
-    public DriverEmailResponseDto getEmailById(Long id) {
-        String email = driverRepository.findEmailById(id).orElseThrow(
-                DriverNotFoundException::new
-        );
-        return DriverEmailResponseDto.builder()
-                .email(email)
-                .id(id)
-                .build();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public DriverStatusResponseDto getDriverStatus(Long id) {
-        Driver driver = findDriverById(id);
-        return DriverStatusResponseDto.builder()
-                .isFree(driver.getIsFree())
                 .build();
     }
 
