@@ -36,7 +36,7 @@ public class UserAccessValidator {
     public boolean isUserAuthorizedForId(String userId, Authentication authentication) {
         String userSequenceId = getUserSequenceId(authentication, USER_SEQUENCE_ID_CLAIM);
         if (userSequenceId == null) return false;
-        log.info("Driver sequence id: {}.", userSequenceId);
+        log.info("User sequence id: {}.", userSequenceId);
         return userId.equals(userSequenceId);
     }
 

@@ -11,7 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static com.artsem.api.rideservice.security.SecurityConstants.ACTUATOR;
-import static com.artsem.api.rideservice.security.SecurityConstants.PASSENGER_SERVICE_DOCS;
+import static com.artsem.api.rideservice.security.SecurityConstants.RIDE_SERVICE_DOCS;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +25,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(PASSENGER_SERVICE_DOCS, ACTUATOR).permitAll()
+                        .requestMatchers(RIDE_SERVICE_DOCS, ACTUATOR).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oath2 -> oath2
                         .jwt(jwt -> jwt
