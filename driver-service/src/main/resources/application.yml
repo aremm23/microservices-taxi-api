@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_URI:localhost:5432}/driver_service_db
-    username: postgres
-    password: postgres
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   jpa:
     open-in-view: false
     show-sql: true
@@ -14,6 +14,17 @@ spring:
         format_sql: true
   application:
     name: driver-service
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
+    port: ${RABBIT_PORT:5672}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
 springdoc:
   api-docs:
@@ -22,3 +33,32 @@ springdoc:
   swagger-ui:
     path: /driver-service-docs/swagger-ui
     enabled: true
+
+rabbitmq:
+  exchanges:
+    callback: "auth.callback.exchange"
+    rollback: "auth.rollback.exchange"
+  queues:
+    driverCreated: "driver-created-queue"
+  keys:
+    userCallback: "user.callback"
+    userRollback: "user.rollback"
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
+
+openapi:
+  server:
+    url: http://localhost:8083
+    description: Driver service
+  contact:
+    name: Artsem Maiseyenka
+    email: artsem.maiseyenka@gmail.com
+  info:
+    title: Driver Service
+    version: 1.0
+    description: This API exposes endpoints to manage drivers and cars

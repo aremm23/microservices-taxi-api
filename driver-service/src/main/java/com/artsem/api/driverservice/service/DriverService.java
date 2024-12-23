@@ -5,9 +5,11 @@ import com.artsem.api.driverservice.filter.DriverFilter;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverAndCarResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverEmailResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverStatusResponseDto;
+import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,4 +38,9 @@ public interface DriverService {
     DriverAndCarResponseDto removeCarFromDriver(Long driverId);
 
     DriverAndCarResponseDto getOneWithCar(Long id);
+
+    DriverEmailResponseDto getEmailById(Long id);
+
+    DriverStatusResponseDto getDriverStatus(Long id);
+
 }
