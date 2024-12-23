@@ -10,6 +10,7 @@ import com.artsem.api.passengerservice.model.Passenger;
 import com.artsem.api.passengerservice.model.dto.request.PassengerRequestDto;
 import com.artsem.api.passengerservice.model.dto.request.PassengerUpdateRequestDto;
 import com.artsem.api.passengerservice.model.dto.response.ListResponseDto;
+import com.artsem.api.passengerservice.model.dto.response.PassengerEmailResponseDto;
 import com.artsem.api.passengerservice.model.dto.response.PassengerResponseDto;
 import com.artsem.api.passengerservice.repository.PassengerRepository;
 import com.artsem.api.passengerservice.service.PassengerService;
@@ -39,12 +40,23 @@ public class PassengerServiceImpl implements PassengerService {
         Page<Passenger> passengers = passengerRepository.findAll(spec, pageable);
         return passengers.map(passenger -> mapper.map(passenger, PassengerResponseDto.class));
     }
-    
+
     @Transactional(readOnly = true)
     @Override
     public PassengerResponseDto getOne(Long id) {
         Passenger passenger = findPassengerById(id);
         return mapper.map(passenger, PassengerResponseDto.class);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PassengerEmailResponseDto getEmail(Long id) {
+        Passenger passenger = findPassengerById(id);
+        String email = passenger.getEmail();
+        return PassengerEmailResponseDto.builder()
+                .email(email)
+                .id(id)
+                .build();
     }
 
     @Transactional(readOnly = true)

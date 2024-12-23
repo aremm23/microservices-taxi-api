@@ -1,0 +1,32 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: notification-service
+  mail:
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type:
+      redis
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/

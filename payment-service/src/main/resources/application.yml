@@ -14,10 +14,39 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+
+springdoc:
+  api-docs:
+    path: /payment-service-docs/v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /payment-service-docs/swagger-ui
+    enabled: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
+
+openapi:
+  contact:
+    email: artsem.maiseyenka@gmail.com
+    name: Artsem Maiseyenka
+  service:
+    url: http://localhost:8086
+    description: Payment service
+  info:
+    title: Payment Service
+    version: 1.0
+    description: This API exposes endpoints to manage balance
 
 stripe:
-  secretKey: ${STRIPE_SECRET_KEY}
+  secretKey: ${STRIPE_SECRET_KEY:your-key}
   success-url: ${FRONTEND_SUCCESS_URL:https://localhost:8086/error}
   cancel-url: ${FRONTEND_CANCEL_URL:https://localhost:8086/success}
   webhook:
-    successSecretKey: ${WEBHOOK_SUCCESS_SECRET_KEY}
+    successSecretKey: ${WEBHOOK_SUCCESS_SECRET_KEY:your-key}

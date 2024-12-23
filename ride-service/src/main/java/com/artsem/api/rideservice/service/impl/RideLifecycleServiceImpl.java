@@ -1,14 +1,20 @@
 package com.artsem.api.rideservice.service.impl;
 
+import com.artsem.api.rideservice.exception.InternalServiceException;
 import com.artsem.api.rideservice.exception.InvalidRideStatusException;
+import com.artsem.api.rideservice.exception.PositiveBalanceRequiredException;
 import com.artsem.api.rideservice.exception.RideNotFoundException;
+import com.artsem.api.rideservice.feign.IsBalancePositiveResponse;
+import com.artsem.api.rideservice.feign.client.PaymentServiceClient;
+import com.artsem.api.rideservice.kafka.PaymentProcessMessage;
+import com.artsem.api.rideservice.kafka.producer.PaymentProducer;
+import com.artsem.api.rideservice.model.PaymentMethod;
 import com.artsem.api.rideservice.model.Ride;
 import com.artsem.api.rideservice.model.RideStatus;
-import com.artsem.api.rideservice.model.dto.internal.AcceptedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.CancelledRideDto;
-import com.artsem.api.rideservice.model.dto.internal.CompletedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.RequestedRideDto;
-import com.artsem.api.rideservice.model.dto.internal.StartedRideDto;
+import com.artsem.api.rideservice.model.dto.request.AcceptedRideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.CancelledRideRequestDto;
+import com.artsem.api.rideservice.model.dto.request.RequestedRideRequestDto;
+import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 import com.artsem.api.rideservice.model.util.UserRole;
 import com.artsem.api.rideservice.repository.RideRepository;
 import com.artsem.api.rideservice.service.RideLifecycleService;
@@ -17,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -27,25 +34,50 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
 
     private final ModelMapper mapper;
 
-    public void requestRide(RequestedRideDto rideDto) {
+    private final PaymentProducer paymentProducer;
+
+    private final PaymentServiceClient paymentServiceClient;
+
+    @Override
+    public RideResponseDto requestRide(RequestedRideRequestDto rideDto) {
         Ride ride = mapper.map(rideDto, Ride.class);
+        checkPaymentMethod(ride);
         ride.setRequestedTime(LocalDateTime.now());
         ride.setStatusId(RideStatus.REQUESTED.getId());
-        rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        return mapper.map(savedRide, RideResponseDto.class);
     }
 
-    public void acceptRide(AcceptedRideDto rideDto) {
-        Ride ride = findRideOrThrow(rideDto.getRideId());
+    private void checkPaymentMethod(Ride ride) {
+        if (ride.getPaymentMethodId().equals(PaymentMethod.BALANCE.getId())) {
+            validatePassengerBalance(ride.getPassengerId());
+        }
+    }
+
+    private void validatePassengerBalance(Long passengerId) {
+        IsBalancePositiveResponse isBalancePositiveResponse = paymentServiceClient.getIsBalancePositiveById(passengerId);
+        if (!passengerId.equals(isBalancePositiveResponse.balanceUserId())) {
+            throw new InternalServiceException();
+        }
+        if (!isBalancePositiveResponse.isBalancePositive()) {
+            throw new PositiveBalanceRequiredException();
+        }
+    }
+
+    @Override
+    public RideResponseDto acceptRide(String rideId, AcceptedRideRequestDto rideDto) {
+        Ride ride = findRideOrThrow(rideId);
         validateRideStatus(
                 ride.getStatusId(),
                 RideStatus.REQUESTED.getId(),
                 ExceptionKeys.REQUESTED_STATUS_EXPECTED
         );
         setAcceptedStatusParameters(rideDto, ride);
-        rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        return mapper.map(savedRide, RideResponseDto.class);
     }
 
-    private void setAcceptedStatusParameters(AcceptedRideDto rideDto, Ride ride) {
+    private void setAcceptedStatusParameters(AcceptedRideRequestDto rideDto, Ride ride) {
         ride.setStatusId(RideStatus.ACCEPTED.getId());
         ride.setAcceptedTime(LocalDateTime.now());
         ride.setDriverId(rideDto.getDriverId());
@@ -53,8 +85,9 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
         ride.setCarLicensePlate(rideDto.getCarLicensePlate());
     }
 
-    public void startRide(StartedRideDto rideDto) {
-        Ride ride = findRideOrThrow(rideDto.getRideId());
+    @Override
+    public RideResponseDto startRide(String rideId) {
+        Ride ride = findRideOrThrow(rideId);
         validateRideStatus(
                 ride.getStatusId(),
                 RideStatus.ACCEPTED.getId(),
@@ -62,11 +95,13 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
         );
         ride.setStatusId(RideStatus.STARTED.getId());
         ride.setStartedTime(LocalDateTime.now());
-        rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        return mapper.map(savedRide, RideResponseDto.class);
     }
 
-    public void finishRide(CompletedRideDto rideDto) {
-        Ride ride = findRideOrThrow(rideDto.getRideId());
+    @Override
+    public RideResponseDto finishRide(String rideId) {
+        Ride ride = findRideOrThrow(rideId);
         validateRideStatus(
                 ride.getStatusId(),
                 RideStatus.STARTED.getId(),
@@ -74,15 +109,33 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
         );
         ride.setStatusId(RideStatus.FINISHED.getId());
         ride.setFinishedTime(LocalDateTime.now());
-        rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        processPaymentIfRequired(savedRide);
+        return mapper.map(savedRide, RideResponseDto.class);
     }
 
-    public void cancelRide(CancelledRideDto rideDto) {
-        Ride ride = findRideOrThrow(rideDto.getRideId());
+    private void processPaymentIfRequired(Ride ride) {
+        if (ride.getPaymentMethodId().equals(PaymentMethod.BALANCE.getId())) {
+            publishPaymentInfoToKafka(ride.getPassengerId(), ride.getPrice());
+        }
+    }
+
+    private void publishPaymentInfoToKafka(Long passengerId, BigDecimal price) {
+        PaymentProcessMessage paymentProcessMessage = PaymentProcessMessage.builder()
+                .userId(passengerId)
+                .amount(price)
+                .build();
+        paymentProducer.sendMessage(paymentProcessMessage);
+    }
+
+    @Override
+    public RideResponseDto cancelRide(String rideId, CancelledRideRequestDto rideDto) {
+        Ride ride = findRideOrThrow(rideId);
         validateRideStatusToCancel(ride);
         ride.setStatusId(defineCancelledByStatusId(rideDto.getUserRole()));
         ride.setCanceledTime(LocalDateTime.now());
-        rideRepository.save(ride);
+        Ride savedRide = rideRepository.save(ride);
+        return mapper.map(savedRide, RideResponseDto.class);
     }
 
     private int defineCancelledByStatusId(UserRole userRole) {

@@ -13,10 +13,34 @@ spring:
   cache:
     type:
       redis
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bootstrap-servers: localhost:9092
+kafka:
+  topic:
+    payment-process-topic:
+      replicas: 1
+      partitions: 1
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
+
+cache:
+  passenger-id:
+    ttl-hours: 3
+  distance-and-duration:
+    ttl-seconds: 30
+
 gcp:
   api:
     maps:
-      key: ${MAPS_API_KEY}
+      key: ${MAPS_API_KEY:your-api-key}
       url: https://maps.googleapis.com/maps/api/distancematrix/json
       units: metric
 

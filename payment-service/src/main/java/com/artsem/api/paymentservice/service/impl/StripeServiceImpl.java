@@ -1,5 +1,8 @@
 package com.artsem.api.paymentservice.service.impl;
 
+import com.artsem.api.paymentservice.exceptions.StripeSessionException;
+import com.artsem.api.paymentservice.exceptions.UnableParseMessageException;
+import com.artsem.api.paymentservice.exceptions.UnableVerifyWebhookSignatureException;
 import com.artsem.api.paymentservice.model.dto.response.CapturePaymentResponseDto;
 import com.artsem.api.paymentservice.model.dto.response.StripeResponseDto;
 import com.artsem.api.paymentservice.service.BalanceService;
@@ -65,16 +68,14 @@ public class StripeServiceImpl implements StripeService {
     }
 
     private void checkBalanceExist(Long balanceId) {
-        if (!balanceService.isBalanceExist(balanceId)) {
-            throw new RuntimeException("Balance not found");//TODO custom exception
-        }
+        balanceService.validateBalanceExistence(balanceId);
     }
 
     private Session tryCreateSession(SessionCreateParams params) {
         try {
             return Session.create(params);
         } catch (StripeException e) {
-            throw new RuntimeException(e);//TODO custom exception
+            throw new StripeSessionException(e);
         }
     }
 
@@ -136,7 +137,7 @@ public class StripeServiceImpl implements StripeService {
         try {
             return Session.retrieve(sessionId);
         } catch (StripeException e) {
-            throw new RuntimeException(e);//TODO custom exception
+            throw new StripeSessionException(e);
         }
     }
 
@@ -157,7 +158,7 @@ public class StripeServiceImpl implements StripeService {
                     payload, sigHeader, webhookSuccessSecretKey
             );
         } catch (SignatureVerificationException ex) {
-            throw new RuntimeException(ex);//TODO custom exception
+            throw new UnableVerifyWebhookSignatureException();
         }
     }
 
@@ -178,7 +179,7 @@ public class StripeServiceImpl implements StripeService {
         try {
             return objectMapper.readTree(payload);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);//TODO custom exception
+            throw new UnableParseMessageException(e.getMessage());
         }
     }
 
