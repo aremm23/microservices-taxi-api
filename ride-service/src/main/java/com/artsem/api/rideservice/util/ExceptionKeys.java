@@ -11,4 +11,6 @@ public class ExceptionKeys {
     public static final String PICKUP_AND_DROP_OFF_REQUIRED = "picker-and-drop-off-required";
     public static final String POSITIVE_BALANCE_REQUIRED = "positive-balance-required";
     public static final String INTERNAL_SERVER_EXCEPTION = "internal-server-exception";
+    public static final String PASSENGER_NOT_FOUND = "passenger-not-found";
+    public static final String DRIVER_NOT_FOUND = "driver-not-found";
 }

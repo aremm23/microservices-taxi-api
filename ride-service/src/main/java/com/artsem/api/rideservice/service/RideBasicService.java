@@ -16,4 +16,8 @@ public interface RideBasicService {
 
     void delete(String id);
 
+    Long getPassengerIdByRideId(String rideId);
+
+    Long getDriverIdByRideId(String rideId);
+
 }

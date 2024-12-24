@@ -50,7 +50,8 @@ public class PassengerController implements PassengerApi {
     @PreAuthorize("""
             (hasRole('ROLE_PASSENGER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
+            @userAccessValidator.isClientAuthorizedForRequest('ride-service', authentication) ||
+            hasAnyRole('ROLE_ADMIN')
             """)
     @GetMapping("/{id}")
     public ResponseEntity<PassengerResponseDto> getOne(@PathVariable Long id) {
@@ -61,6 +62,7 @@ public class PassengerController implements PassengerApi {
     @PreAuthorize("""
             (hasRole('ROLE_PASSENGER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
+            @userAccessValidator.isClientAuthorizedForRequest('notification-service', authentication) ||
             hasRole('ROLE_ADMIN')
             """)
     @GetMapping("/{id}/email")

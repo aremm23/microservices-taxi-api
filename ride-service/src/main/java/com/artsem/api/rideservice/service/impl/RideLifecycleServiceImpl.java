@@ -1,11 +1,13 @@
 package com.artsem.api.rideservice.service.impl;
 
+import com.artsem.api.rideservice.exception.DriverNotFoundException;
 import com.artsem.api.rideservice.exception.InternalServiceException;
 import com.artsem.api.rideservice.exception.InvalidRideStatusException;
+import com.artsem.api.rideservice.exception.PassengerNotFoundException;
 import com.artsem.api.rideservice.exception.PositiveBalanceRequiredException;
 import com.artsem.api.rideservice.exception.RideNotFoundException;
-import com.artsem.api.rideservice.feign.IsBalancePositiveResponse;
-import com.artsem.api.rideservice.feign.client.PaymentServiceClient;
+import com.artsem.api.rideservice.feign.FeignClientAdapter;
+import com.artsem.api.rideservice.feign.response.IsBalancePositiveResponse;
 import com.artsem.api.rideservice.kafka.PaymentProcessMessage;
 import com.artsem.api.rideservice.kafka.producer.PaymentProducer;
 import com.artsem.api.rideservice.model.PaymentMethod;
@@ -36,16 +38,27 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
 
     private final PaymentProducer paymentProducer;
 
-    private final PaymentServiceClient paymentServiceClient;
+    private final FeignClientAdapter feignClientAdapter;
+
+    public static final boolean DRIVER_IS_FREE_STATUS = true;
+    public static final boolean DRIVER_IS_NOT_FREE_STATUS = false;
 
     @Override
     public RideResponseDto requestRide(RequestedRideRequestDto rideDto) {
         Ride ride = mapper.map(rideDto, Ride.class);
         checkPaymentMethod(ride);
+        checkIsPassengerExist(rideDto.getPassengerId());
         ride.setRequestedTime(LocalDateTime.now());
         ride.setStatusId(RideStatus.REQUESTED.getId());
         Ride savedRide = rideRepository.save(ride);
         return mapper.map(savedRide, RideResponseDto.class);
+    }
+
+    private void checkIsPassengerExist(Long passengerId) {
+        Long existedPassengerId = feignClientAdapter.getPassengerById(passengerId).id();
+        if (!passengerId.equals(existedPassengerId)) {
+            throw new PassengerNotFoundException();
+        }
     }
 
     private void checkPaymentMethod(Ride ride) {
@@ -55,7 +68,7 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
     }
 
     private void validatePassengerBalance(Long passengerId) {
-        IsBalancePositiveResponse isBalancePositiveResponse = paymentServiceClient.getIsBalancePositiveById(passengerId);
+        IsBalancePositiveResponse isBalancePositiveResponse = feignClientAdapter.getIsBalancePositiveById(passengerId);
         if (!passengerId.equals(isBalancePositiveResponse.balanceUserId())) {
             throw new InternalServiceException();
         }
@@ -72,9 +85,17 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
                 RideStatus.REQUESTED.getId(),
                 ExceptionKeys.REQUESTED_STATUS_EXPECTED
         );
+        updateDriverStatus(rideDto.getDriverId(), DRIVER_IS_NOT_FREE_STATUS);
         setAcceptedStatusParameters(rideDto, ride);
         Ride savedRide = rideRepository.save(ride);
         return mapper.map(savedRide, RideResponseDto.class);
+    }
+
+    private void updateDriverStatus(Long driverId, boolean updatedStatus) {
+        Long updatedDriverId = feignClientAdapter.updateDriverStatusAndGetDriverById(driverId, updatedStatus).id();
+        if(!updatedDriverId.equals(driverId)) {
+            throw new DriverNotFoundException();
+        }
     }
 
     private void setAcceptedStatusParameters(AcceptedRideRequestDto rideDto, Ride ride) {
@@ -107,6 +128,7 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
                 RideStatus.STARTED.getId(),
                 ExceptionKeys.STARTED_STATUS_EXPECTED
         );
+        updateDriverStatus(ride.getDriverId(), DRIVER_IS_FREE_STATUS);
         ride.setStatusId(RideStatus.FINISHED.getId());
         ride.setFinishedTime(LocalDateTime.now());
         Ride savedRide = rideRepository.save(ride);
@@ -132,6 +154,7 @@ public class RideLifecycleServiceImpl implements RideLifecycleService {
     public RideResponseDto cancelRide(String rideId, CancelledRideRequestDto rideDto) {
         Ride ride = findRideOrThrow(rideId);
         validateRideStatusToCancel(ride);
+        updateDriverStatus(ride.getDriverId(), DRIVER_IS_FREE_STATUS);
         ride.setStatusId(defineCancelledByStatusId(rideDto.getUserRole()));
         ride.setCanceledTime(LocalDateTime.now());
         Ride savedRide = rideRepository.save(ride);

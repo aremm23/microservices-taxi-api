@@ -52,6 +52,13 @@ public class RideBasicServiceImpl implements RideBasicService {
                 .orElseThrow(RideNotFoundException::new);
     }
 
+    @Cacheable(value = "driversIdCache", key = "#rideId")
+    public Long getDriverIdByRideId(String rideId) {
+        return rideRepository.findById(rideId)
+                .map(Ride::getDriverId)
+                .orElseThrow(RideNotFoundException::new);
+    }
+
     public RideResponseDto create(RideRequestDto rideDto) {
         Ride ride = mapper.map(rideDto, Ride.class);
         Ride savedRide = rideRepository.save(ride);
