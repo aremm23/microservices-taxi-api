@@ -37,7 +37,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
             return new JwtAuthenticationToken(jwt, authorities, jwt.getClaim(JwtClaimNames.SUB));
         } catch (VerificationException e) {
-            log.error("Failed to verify JWT token: {}", jwt.getTokenValue(), e);
+            log.error("Failed to verify JWT token", e);
             throw new IllegalArgumentException("Invalid JWT token", e);
         }
     }
