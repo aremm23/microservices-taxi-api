@@ -5,9 +5,10 @@ import com.artsem.api.driverservice.filter.DriverFilter;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverAndCarResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
+import com.artsem.api.driverservice.security.NoSecurityConfig;
 import com.artsem.api.driverservice.service.DriverService;
 import com.artsem.api.driverservice.util.CarServiceImplTestUtil;
 import com.artsem.api.driverservice.util.DriverServiceImplTestUtil;
@@ -15,10 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,6 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DriverController.class)
+@ActiveProfiles("test")
+@Import(NoSecurityConfig.class)
 class DriverControllerTest {
 
     @Autowired

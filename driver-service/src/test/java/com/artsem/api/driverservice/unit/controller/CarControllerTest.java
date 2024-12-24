@@ -4,8 +4,9 @@ import com.artsem.api.driverservice.controller.CarController;
 import com.artsem.api.driverservice.filter.CarFilter;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.responce.CarResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.response.CarResponseDto;
+import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
+import com.artsem.api.driverservice.security.NoSecurityConfig;
 import com.artsem.api.driverservice.service.CarService;
 import com.artsem.api.driverservice.util.CarServiceImplTestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,10 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -36,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CarController.class)
+@ActiveProfiles("test")
+@Import(NoSecurityConfig.class)
 class CarControllerTest {
 
     @Autowired

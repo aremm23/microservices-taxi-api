@@ -4,8 +4,8 @@ import com.artsem.api.driverservice.model.Car;
 import com.artsem.api.driverservice.model.CarCategory;
 import com.artsem.api.driverservice.model.dto.request.CarRequestDto;
 import com.artsem.api.driverservice.model.dto.request.CarUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.responce.CarResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.response.CarResponseDto;
+import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
 
 import java.util.List;
 
