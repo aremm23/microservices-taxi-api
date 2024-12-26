@@ -1,6 +1,6 @@
 package com.artsem.api.rideservice.feign.client;
 
-import com.artsem.api.rideservice.feign.IsBalancePositiveResponse;
+import com.artsem.api.rideservice.feign.response.IsBalancePositiveResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
