@@ -1,15 +1,16 @@
 package com.artsem.api.rideservice.controller.api;
 
+import com.artsem.api.rideservice.model.dto.response.PriceResponseDto;
 import com.artsem.api.rideservice.model.util.DistanceAndDurationValues;
 import com.artsem.api.rideservice.model.util.RideCalculatePriceInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
-
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Ride Info Controller", description = "API for retrieving ride-related calculations such as distance, duration, and price.")
 public interface RideCalculationControllerApi {
 
@@ -32,7 +33,7 @@ public interface RideCalculationControllerApi {
     )
     @ApiResponse(responseCode = "200", description = "Estimated ride price")
     @ApiResponse(responseCode = "400", description = "Validation failed or other exception occurred")
-    ResponseEntity<BigDecimal> calculateRidePrice(
+    ResponseEntity<PriceResponseDto> calculateRidePrice(
             @Parameter(description = "Details required to calculate the ride price, such as distance and time")
             RideCalculatePriceInfo calculatePriceInfo
     );

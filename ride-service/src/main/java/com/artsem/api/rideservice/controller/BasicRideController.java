@@ -45,7 +45,8 @@ public class BasicRideController implements BasicRideControllerApi {
             @userAccessValidator.isPassengerAuthorizedForRideId(#id, authentication)) ||
             (hasRole('ROLE_DRIVER') &&
             @userAccessValidator.isDriverAuthorizedForRideId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
+            hasRole('ROLE_ADMIN') ||
+            @userAccessValidator.isClientAuthorizedForRequest('review-service', authentication)
             """)
     @GetMapping("/{id}")
     public ResponseEntity<RideResponseDto> getById(@PathVariable String id) {

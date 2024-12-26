@@ -8,6 +8,7 @@ import com.artsem.api.paymentservice.service.BalanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,6 +27,11 @@ public class BalanceController implements BalanceApi {
 
     private final BalanceService balanceService;
 
+    @PreAuthorize("""
+            (hasRole('ROLE_PASSENGER') &&
+            @userAccessValidator.isUserAuthorizedForId(#initBalanceRequestDto.userId(), authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @PostMapping("/init")
     public ResponseEntity<BalanceResponseDto> initBalance(
             @RequestBody InitBalanceRequestDto initBalanceRequestDto
@@ -34,6 +40,7 @@ public class BalanceController implements BalanceApi {
         return new ResponseEntity<>(savedBalance, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping("/{id}/charge")
     public ResponseEntity<BalanceResponseDto> charge(
             @PathVariable Long id,
@@ -46,6 +53,11 @@ public class BalanceController implements BalanceApi {
         return ResponseEntity.ok(savedBalance);
     }
 
+    @PreAuthorize("""
+            (hasRole('ROLE_PASSENGER') &&
+            @userAccessValidator.isPassengerAuthorizedForBalanceId(#id, authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @GetMapping("/{id}")
     public ResponseEntity<BalanceResponseDto> getById(
             @PathVariable Long id
@@ -54,6 +66,11 @@ public class BalanceController implements BalanceApi {
         return ResponseEntity.ok(balance);
     }
 
+    @PreAuthorize("""
+            (hasRole('ROLE_PASSENGER') &&
+            @userAccessValidator.isPassengerAuthorizedForBalanceId(#id, authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id
