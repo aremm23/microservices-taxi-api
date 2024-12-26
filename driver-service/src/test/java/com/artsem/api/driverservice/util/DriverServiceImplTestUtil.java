@@ -4,9 +4,9 @@ import com.artsem.api.driverservice.model.Driver;
 import com.artsem.api.driverservice.model.dto.request.DriverRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverStatusUpdateRequestDto;
 import com.artsem.api.driverservice.model.dto.request.DriverUpdateRequestDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverAndCarResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.DriverResponseDto;
-import com.artsem.api.driverservice.model.dto.responce.ListResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverAndCarResponseDto;
+import com.artsem.api.driverservice.model.dto.response.DriverResponseDto;
+import com.artsem.api.driverservice.model.dto.response.ListResponseDto;
 
 import java.util.List;
 

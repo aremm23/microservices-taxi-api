@@ -9,8 +9,9 @@ import com.artsem.api.driverservice.util.CarServiceImplTestUtil;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 "classpath:sql/insert_test_cars.sql"
         }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
+@WithMockUser(roles = "ADMIN")
 class CarIntegrationTest extends PostgresContainerConfig {
 
     @Autowired

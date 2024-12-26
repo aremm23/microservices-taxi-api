@@ -20,17 +20,9 @@ public class LocalizationConfig {
     }
 
     @Bean
-    public MessageSource validationMessageSource() {
+    public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:validation");
-        messageSource.setDefaultEncoding("ISO-8859-1");
-        return messageSource;
-    }
-
-    @Bean
-    public MessageSource exceptionMessageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:exceptions");
+        messageSource.setBasenames("classpath:validation", "classpath:exceptions");
         messageSource.setDefaultEncoding("ISO-8859-1");
         return messageSource;
     }
