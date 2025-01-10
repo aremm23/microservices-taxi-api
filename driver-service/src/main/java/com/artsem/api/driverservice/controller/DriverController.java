@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,7 +65,8 @@ public class DriverController implements DriverApi {
     @PreAuthorize("""
             (hasRole('ROLE_DRIVER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasAnyRole('ROLE_ADMIN', 'ROLE_NOTIFICATION_SERVICE')
+            hasRole('ROLE_ADMIN') ||
+            @userAccessValidator.isClientAuthorizedForRequest('notification-service', authentication)
             """)
     @GetMapping("/{id}/email")
     public ResponseEntity<DriverEmailResponseDto> getEmailById(@PathVariable Long id) {
@@ -135,9 +137,10 @@ public class DriverController implements DriverApi {
     @PreAuthorize("""
             (hasRole('ROLE_DRIVER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN')
+            hasRole('ROLE_ADMIN') ||
+            @userAccessValidator.isClientAuthorizedForRequest('ride-service', authentication)
             """)
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<DriverResponseDto> updateDriverStatus(
             @PathVariable
             Long id,
@@ -151,7 +154,7 @@ public class DriverController implements DriverApi {
     @PreAuthorize("""
             (hasRole('ROLE_DRIVER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasAnyRole('ROLE_ADMIN', 'ROLE_RIDE_SERVICE')
+            hasRole('ROLE_ADMIN')
             """)
     @GetMapping("/{id}/status")
     public ResponseEntity<DriverStatusResponseDto> getDriverStatus(@PathVariable Long id) {

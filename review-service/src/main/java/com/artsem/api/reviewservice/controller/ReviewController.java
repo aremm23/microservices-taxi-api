@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,6 +32,7 @@ public class ReviewController implements ReviewApi {
 
     private final ReviewService reviewService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<PagedModel<ReviewResponseDto>> getList(
             @ModelAttribute ReviewFilter filter,
@@ -40,6 +42,7 @@ public class ReviewController implements ReviewApi {
         return ResponseEntity.ok(new PagedModel<>(reviewResponseDtos));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PASSENGER', 'ROLE_DRIVER')")
     @GetMapping("/{id}")
     public ResponseEntity<ReviewResponseDto> getById(
             @PathVariable Long id
@@ -48,6 +51,11 @@ public class ReviewController implements ReviewApi {
         return ResponseEntity.ok(review);
     }
 
+    @PreAuthorize("""
+            (hasAnyRole('ROLE_PASSENGER', 'ROLE_DRIVER') &&
+            @userAccessValidator.isReviewerAuthorizeForReview(#reviewDto.reviewerId, authentication)) ||
+            hasRole('ROLE_ADMIN')
+            """)
     @PostMapping
     public ResponseEntity<ReviewResponseDto> create(
             @Valid @RequestBody ReviewRequestDto reviewDto
@@ -56,6 +64,7 @@ public class ReviewController implements ReviewApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id
@@ -64,6 +73,7 @@ public class ReviewController implements ReviewApi {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping
     public ResponseEntity<Void> deleteMany(
             @RequestParam List<Long> ids
