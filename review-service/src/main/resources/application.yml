@@ -20,11 +20,6 @@ spring:
           issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
-keycloak:
-  client-id: review-service
-  client-secret: ${CLIENT_SECRET:juE2m2BMYIkrzqLKkiVAiY1j2IusWxZQ}
-  auth-server-url: ${AUTH_SERVICE_URI:http://localhost:9082/realms/taxi-app-realm/protocol/openid-connect/token}
-
 springdoc:
   api-docs:
     path: /review-service-docs/v3/api-docs
