@@ -40,7 +40,7 @@ services:
     ports:
       - "9080:9080"
     volumes:
-      - ./keycloak-init:/opt/keycloak/data/import
+      - ./keycloak/keycloak-init:/opt/keycloak/data/import
     environment:
       KC_HTTP_PORT: 9080
       KEYCLOAK_ADMIN: admin
@@ -62,5 +62,312 @@ services:
       retries: 5
     depends_on:
       - kc-postgres
+
+  redis:
+    image: redis:7.4.2
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  ride-service-mongo:
+    image: mongo:8.0.4
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: ride_db
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  driver-service-postgres:
+    image: postgres:17.2
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-driver-service_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: driver_service_db
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  passenger-service-postgres:
+    image: postgres:17.2
+    restart: always
+    ports:
+      - "5434:5432"
+    volumes:
+      - passenger-service-postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: passenger_service_db
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  payment-service-postgres:
+    image: postgres:17.2
+    restart: always
+    ports:
+      - "5435:5432"
+    volumes:
+      - payment-service-postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: payment_service_db
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  review-service-mysql:
+    image: mysql:9.1.0
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - review-service-mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: review_db
+    healthcheck:
+      test: mysqladmin ping -u root -p $$MYSQL_ROOT_PASSWORD
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  zookeeper:
+    image: zookeeper:3.9.3
+    restart: always
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: nc -z 127.0.0.1 2181 || exit -1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    restart: always
+    ports:
+      - "29092:29092"
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    healthcheck:
+      test: kafka-topics --bootstrap-server localhost:29092 --list
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - zookeeper
+    labels:
+      amplicode.image: confluent/kafka
+
+  rabbitmq:
+    image: rabbitmq:4.0.5
+    restart: always
+    ports:
+      - "5672:5672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q status
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  passenger-service:
+    image: passenger-service:latest
+    build:
+      context: passenger-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8082:8082"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - rabbitmq
+      - passenger-service-postgres
+      - eureka-service
+
+  driver-service:
+    image: driver-service:latest
+    build:
+      context: driver-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8083:8083"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8083/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+      - driver-service-postgres
+      - rabbitmq
+
+  auth-service:
+    image: auth-service:latest
+    build:
+      context: auth-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+      - kc-postgres
+      - keycloak
+      - rabbitmq
+
+  gateway-service:
+    image: gateway-service:latest
+    build:
+      context: gateway-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+
+  payment-service:
+    image: payment-service:latest
+    build:
+      context: payment-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8086:8086"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8086/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - payment-service-postgres
+      - kafka
+      - eureka-service
+      - redis
+
+  ride-service:
+    image: ride-service:latest
+    build:
+      context: ride-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8084:8084"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8084/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+      - redis
+      - ride-service-mongo
+      - kafka
+
+  review-service:
+    image: review-service:latest
+    build:
+      context: review-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    ports:
+      - "8085:8085"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8085/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+      - review-service-mysql
+
 volumes:
   kc-postgres_data:
+  redis_data:
+  mongo_data:
+  postgres-driver-service_data:
+  passenger-service-postgres_data:
+  payment-service-postgres_data:
+  review-service-mysql_data:
+  kafka_data:
+  rabbitmq_data:
