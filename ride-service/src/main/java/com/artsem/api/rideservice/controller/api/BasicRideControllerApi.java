@@ -6,12 +6,13 @@ import com.artsem.api.rideservice.model.dto.response.RideResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Ride Controller", description = "API for managing rides in the ride service")
 public interface BasicRideControllerApi {
 

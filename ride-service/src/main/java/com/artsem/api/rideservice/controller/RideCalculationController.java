@@ -1,11 +1,13 @@
 package com.artsem.api.rideservice.controller;
 
 import com.artsem.api.rideservice.controller.api.RideCalculationControllerApi;
+import com.artsem.api.rideservice.model.dto.response.PriceResponseDto;
 import com.artsem.api.rideservice.model.util.DistanceAndDurationValues;
 import com.artsem.api.rideservice.model.util.RideCalculatePriceInfo;
 import com.artsem.api.rideservice.service.RideDistanceService;
 import com.artsem.api.rideservice.service.RidePriceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,10 +38,16 @@ public class RideCalculationController implements RideCalculationControllerApi {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PASSENGER')")
     @GetMapping("/price")
-    public ResponseEntity<BigDecimal> calculateRidePrice(
+    public ResponseEntity<PriceResponseDto> calculateRidePrice(
             @RequestBody RideCalculatePriceInfo calculatePriceInfo
     ) {
-        return ResponseEntity.ok(ridePriceService.calculateRidePrice(calculatePriceInfo));
+        BigDecimal price = ridePriceService.calculateRidePrice(calculatePriceInfo);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(PriceResponseDto.builder()
+                        .price(price)
+                        .build()
+                );
     }
 
 }

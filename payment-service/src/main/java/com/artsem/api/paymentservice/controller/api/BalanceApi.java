@@ -5,9 +5,11 @@ import com.artsem.api.paymentservice.model.dto.request.InitBalanceRequestDto;
 import com.artsem.api.paymentservice.model.dto.response.BalanceResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Balance Controller", description = "API for managing user balances in the payment service")
 public interface BalanceApi {
 

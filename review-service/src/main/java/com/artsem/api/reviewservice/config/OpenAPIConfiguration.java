@@ -1,8 +1,10 @@
 package com.artsem.api.reviewservice.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,49 +15,71 @@ import java.util.List;
 @Configuration
 public class OpenAPIConfiguration {
 
-    private final String contactEmail;
+    private final String serverUrl;
+    private final String serverDescription;
     private final String contactName;
-    private final String serviceUrl;
-    private final String serviceDescription;
-    private final String infoTitle;
-    private final String infoVersion;
-    private final String infoDescription;
+    private final String contactEmail;
+    private final String apiTitle;
+    private final String apiVersion;
+    private final String apiDescription;
 
     public OpenAPIConfiguration(
-            @Value("${openapi.contact.email}") String contactEmail,
+            @Value("${openapi.service.url}") String serverUrl,
+            @Value("${openapi.service.description}") String serverDescription,
             @Value("${openapi.contact.name}") String contactName,
-            @Value("${openapi.service.url}") String serviceUrl,
-            @Value("${openapi.service.description}") String serviceDescription,
-            @Value("${openapi.info.title}") String infoTitle,
-            @Value("${openapi.info.version}") String infoVersion,
-            @Value("${openapi.info.description}") String infoDescription
-    ) {
-        this.contactEmail = contactEmail;
+            @Value("${openapi.contact.email}") String contactEmail,
+            @Value("${openapi.info.title}") String apiTitle,
+            @Value("${openapi.info.version}") String apiVersion,
+            @Value("${openapi.info.description}") String apiDescription) {
+        this.serverUrl = serverUrl;
+        this.serverDescription = serverDescription;
         this.contactName = contactName;
-        this.serviceUrl = serviceUrl;
-        this.serviceDescription = serviceDescription;
-        this.infoTitle = infoTitle;
-        this.infoVersion = infoVersion;
-        this.infoDescription = infoDescription;
+        this.contactEmail = contactEmail;
+        this.apiTitle = apiTitle;
+        this.apiVersion = apiVersion;
+        this.apiDescription = apiDescription;
     }
 
     @Bean
     public OpenAPI defineOpenApi() {
-        Server server = new Server();
-        server.setUrl(serviceUrl);
-        server.setDescription(serviceDescription);
-
-        Contact myContact = new Contact();
-        myContact.setName(contactName);
-        myContact.setEmail(contactEmail);
-
-        Info information = new Info()
-                .title(infoTitle)
-                .version(infoVersion)
-                .description(infoDescription)
-                .contact(myContact);
         return new OpenAPI()
-                .info(information)
-                .servers(List.of(server));
+                .info(getApiInfo())
+                .servers(getServers())
+                .components(getComponents());
+    }
+
+    private Info getApiInfo() {
+        return new Info()
+                .title(apiTitle)
+                .version(apiVersion)
+                .description(apiDescription)
+                .contact(getContact());
+    }
+
+    private Contact getContact() {
+        Contact contact = new Contact();
+        contact.setName(contactName);
+        contact.setEmail(contactEmail);
+        return contact;
+    }
+
+    private List<Server> getServers() {
+        Server server = new Server();
+        server.setUrl(serverUrl);
+        server.setDescription(serverDescription);
+        return List.of(server);
+    }
+
+    private Components getComponents() {
+        return new Components().addSecuritySchemes("bearerAuth", getSecurityScheme());
+    }
+
+    private SecurityScheme getSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .name("Authorization")
+                .description("Enter your Bearer token here");
     }
 }

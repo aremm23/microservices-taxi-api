@@ -5,6 +5,7 @@ import com.artsem.api.reviewservice.model.dto.request.ReviewRequestDto;
 import com.artsem.api.reviewservice.model.dto.response.ReviewResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -12,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Review Controller", description = "API for managing reviews in the review service")
 public interface ReviewApi {
 
