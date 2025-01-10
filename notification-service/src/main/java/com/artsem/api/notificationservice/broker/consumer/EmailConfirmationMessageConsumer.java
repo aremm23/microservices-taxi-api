@@ -16,7 +16,7 @@ public class EmailConfirmationMessageConsumer {
     private final EmailTemplateService emailTemplateService;
 
     @RabbitListener(queues = RabbitConfig.NOTIFICATION_QUEUE)
-    public void receivePassengerCreatedMessage(EmailConfirmationDto emailConfirmationDto) {
+    public void receiveEmailConfirmationDto(EmailConfirmationDto emailConfirmationDto) {
         log.info("Received email verification message: {}", emailConfirmationDto);
         emailTemplateService.emailConfirmationTemplate(emailConfirmationDto);
     }
