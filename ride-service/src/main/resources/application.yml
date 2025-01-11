@@ -6,9 +6,9 @@ spring:
     name: ride-service
   data:
     mongodb:
-      uri: mongodb://admin:password@localhost:27017/ride_db?authSource=admin
+      uri: mongodb://admin:password@${MONGO_URI:localhost:27017}/ride_db?authSource=admin
     redis:
-      host: localhost
+      host: {REDIS_HOST:localhost}
       port: 6379
   cache:
     type:
@@ -17,7 +17,7 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: ${KAFKA_BOOSTRAP_SERVERS_URI:localhost:9092}
   security:
     oauth2:
       resourceserver:
@@ -34,7 +34,7 @@ kafka:
 keycloak:
   client-id: ride-service
   client-secret: ${CLIENT_SECRET:eno6w0hmGrFH53JobosMsDwTPISx1oI7}
-  auth-server-url: ${AUTH_SERVICE_URI:http://localhost:9082/realms/taxi-app-realm/protocol/openid-connect/token}
+  auth-server-url: ${AUTH_SERVICE_URI:http://localhost:9082}/realms/taxi-app-realm/protocol/openid-connect/token
 
 eureka:
   client:
