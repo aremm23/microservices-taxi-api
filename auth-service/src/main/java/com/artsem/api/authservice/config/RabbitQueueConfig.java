@@ -5,6 +5,7 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +38,10 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Binding notificationBinding(Queue notificationQueue, TopicExchange notificationExchange) {
+    public Binding notificationBinding(
+            @Qualifier("notificationQueue") Queue notificationQueue,
+            @Qualifier("notificationExchange") TopicExchange notificationExchange
+    ) {
         return BindingBuilder.bind(notificationQueue).to(notificationExchange).with(NOTIFICATION_ROUTING_KEY);
     }
 
@@ -52,7 +56,10 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Binding authRollbackBinding(Queue authRollbackQueue, DirectExchange authRollbackExchange) {
+    public Binding authRollbackBinding(
+            @Qualifier("authRollbackQueue") Queue authRollbackQueue,
+            @Qualifier("authRollbackExchange") DirectExchange authRollbackExchange
+    ) {
         return BindingBuilder.bind(authRollbackQueue).to(authRollbackExchange).with(USER_ROLLBACK_KEY);
     }
 
@@ -82,17 +89,26 @@ public class RabbitQueueConfig {
     }
 
     @Bean
-    public Binding authCallbackBinding(Queue authCallbackQueue, DirectExchange authCallbackExchange) {
+    public Binding authCallbackBinding(
+            @Qualifier("authCallbackQueue") Queue authCallbackQueue,
+            @Qualifier("authCallbackExchange") DirectExchange authCallbackExchange
+    ) {
         return BindingBuilder.bind(authCallbackQueue).to(authCallbackExchange).with(USER_CALLBACK_KEY);
     }
 
     @Bean
-    public Binding passengerBinding(Queue passengerQueue, TopicExchange userExchange) {
+    public Binding passengerBinding(
+            @Qualifier("passengerQueue") Queue passengerQueue,
+            @Qualifier("userExchange") TopicExchange userExchange
+    ) {
         return BindingBuilder.bind(passengerQueue).to(userExchange).with(PASSENGER_CREATED_KEY);
     }
 
     @Bean
-    public Binding driverBinding(Queue driverQueue, TopicExchange userExchange) {
+    public Binding driverBinding(
+            @Qualifier("driverQueue") Queue driverQueue,
+            @Qualifier("userExchange") TopicExchange userExchange
+    ) {
         return BindingBuilder.bind(driverQueue).to(userExchange).with(DRIVER_CREATED_KEY);
     }
 }
