@@ -38,7 +38,7 @@ services:
     restart: always
     command: start-dev --import-realm --health-enabled=true
     ports:
-      - "9080:9080"
+      - "9082:9082"
     volumes:
       - ./keycloak/keycloak-init:/opt/keycloak/data/import
     environment:
@@ -228,6 +228,11 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - RABBIT_HOST=rabbitmq
+      - POSTGRES_URI=passenger-service-postgres:5432
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
     ports:
       - "8082:8082"
     healthcheck:
@@ -248,6 +253,11 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - RABBIT_HOST=rabbitmq
+      - POSTGRES_URI=driver-service-postgres:5432
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
     ports:
       - "8083:8083"
     healthcheck:
@@ -268,6 +278,11 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - RABBIT_HOST=rabbitmq
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - APP_KEYCLOAK_SERVER_URL=http://keycloak:9082
+      - EUREKA_URI=eureka-service:8761
     ports:
       - "8081:8081"
     healthcheck:
@@ -289,6 +304,9 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
     ports:
       - "8080:8080"
     healthcheck:
@@ -307,6 +325,11 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - POSTGRES_URI=payment-service-postgres:5432
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
+      - KAFKA_BOOSTRAP_SERVERS_URI=kafka:9092
     ports:
       - "8086:8086"
     healthcheck:
@@ -328,6 +351,13 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - REDIS_HOST=redis
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
+      - KAFKA_BOOSTRAP_SERVERS_URI=kafka:9092
+      - MONGO_URI=ride-service-mongo:27017
+      - AUTH_SERVICE_URI=http://keycloak:9082
     ports:
       - "8084:8084"
     healthcheck:
@@ -349,6 +379,10 @@ services:
       args:
         DOCKER_BUILDKIT: 1
     restart: always
+    environment:
+      - MYSQL_URI=review-service-mysql:3306
+      - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
+      - EUREKA_URI=eureka-service:8761
     ports:
       - "8085:8085"
     healthcheck:
