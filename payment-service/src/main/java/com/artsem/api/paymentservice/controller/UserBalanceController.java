@@ -21,7 +21,6 @@ public class UserBalanceController implements UserBalanceApi {
     @PreAuthorize("""
             (hasRole('ROLE_PASSENGER') &&
             @userAccessValidator.isUserAuthorizedForId(#userId, authentication)) ||
-            @userAccessValidator.isClientAuthorizedForRequest('ride-service', authentication) ||
             hasRole('ROLE_ADMIN')
             """)
     @GetMapping("/{userId}/balance/is-positive")
