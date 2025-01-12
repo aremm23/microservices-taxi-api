@@ -50,7 +50,6 @@ public class PassengerController implements PassengerApi {
     @PreAuthorize("""
             (hasRole('ROLE_PASSENGER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            @userAccessValidator.isClientAuthorizedForRequest('ride-service', authentication) ||
             hasAnyRole('ROLE_ADMIN')
             """)
     @GetMapping("/{id}")

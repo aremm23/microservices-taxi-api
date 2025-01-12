@@ -20,7 +20,7 @@ app:
   keycloak:
     admin:
       client-id: ${APP_KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
-      client-secret: ${APP_KEYCLOAK_ADMIN_CLIENT_SECRET:YM3aXVjgubdyWTw3OKyZIXFDAwdGwUSL}
+      client-secret: ${APP_KEYCLOAK_ADMIN_CLIENT_SECRET:**********}
     user:
       client-id: ${APP_KEYCLOAK_USER_CLIENT_ID:taxi-app-client}
     realm: ${APP_KEYCLOAK_REALM:taxi-app-realm}
