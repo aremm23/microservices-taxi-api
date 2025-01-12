@@ -33,7 +33,7 @@ kafka:
 
 keycloak:
   client-id: ride-service
-  client-secret: ${CLIENT_SECRET:eno6w0hmGrFH53JobosMsDwTPISx1oI7}
+  client-secret: ${CLIENT_SECRET:**********}
   auth-server-url: ${AUTH_SERVICE_URI:http://localhost:9082}/realms/taxi-app-realm/protocol/openid-connect/token
 
 eureka:
