@@ -393,6 +393,29 @@ services:
       - eureka-service
       - review-service-mysql
 
+  notification-service:
+    image: notification-service:latest
+    build:
+      context: notification-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: always
+    environment:
+      - RABBIT_HOST=rabbitmq
+      - REDIS_HOST=redis
+      - EUREKA_URI=eureka-service:8761
+    ports:
+      - "8087:8087"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8087/actuator/health || exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    depends_on:
+      - eureka-service
+      - rabbitmq
+
 volumes:
   kc-postgres_data:
   redis_data:
