@@ -20,8 +20,6 @@ services:
     restart: always
     ports:
       - "5432:5432"
-    volumes:
-      - kc-postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -40,9 +38,9 @@ services:
     ports:
       - "9082:9082"
     volumes:
-      - ./keycloak/keycloak-init:/opt/keycloak/data/import
+      - ./keycloak-init:/opt/keycloak/data/import
     environment:
-      KC_HTTP_PORT: 9080
+      KC_HTTP_PORT: 9082
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
@@ -55,7 +53,7 @@ services:
       KC_FEATURES: token-exchange,admin-fine-grained-authz
     healthcheck:
       test:
-        [ "CMD-SHELL", "{ exec 3<>/dev/tcp/localhost/9080 && echo -e \"GET /health/ready HTTP/1.1\nhost: localhost:9080\n\" >&3 && timeout --preserve-status 1 cat <&3 | grep -m 1 -q 'status.*UP'; }" ]
+        [ "CMD-SHELL", "{ exec 3<>/dev/tcp/localhost/9082 && echo -e \"GET /health/ready HTTP/1.1\nhost: localhost:9082\n\" >&3 && timeout --preserve-status 1 cat <&3 | grep -m 1 -q 'status.*UP'; }" ]
       interval: 10s
       timeout: 5s
       start_period: 60s
