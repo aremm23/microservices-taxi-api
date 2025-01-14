@@ -15,7 +15,7 @@ spring:
       hibernate:
         format_sql: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOSTRAP_SERVERS_URI:localhost:9092}
   security:
     oauth2:
       resourceserver:

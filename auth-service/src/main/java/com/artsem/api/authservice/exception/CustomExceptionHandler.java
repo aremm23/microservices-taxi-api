@@ -23,9 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CustomExceptionHandler {
 
-    private final MessageSource exceptionMessageSource;
-
-    private final MessageSource validationMessageSource;
+    private final MessageSource messageSource;
 
     @ExceptionHandler({
             InvalidUserRoleException.class,
@@ -35,7 +33,7 @@ public class CustomExceptionHandler {
             ConfirmationTokenExpiredException.class
     })
     public ResponseEntity<ErrorResponse> handlerException(RuntimeException e) {
-        String message = exceptionMessageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
         return new ResponseEntity<>(
                 createErrorResponse(message),
                 HttpStatus.BAD_REQUEST
@@ -61,7 +59,7 @@ public class CustomExceptionHandler {
     }
 
     private String resolveResponseStatusExceptionInfo(ResponseStatusException ex) {
-        return exceptionMessageSource.getMessage(
+        return messageSource.getMessage(
                 Objects.requireNonNull(ex.getReason()),
                 new Object[]{ex.getStatusCode()},
                 LocaleContextHolder.getLocale()
@@ -80,7 +78,7 @@ public class CustomExceptionHandler {
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessageKey = getValidationErrorMessageKey(error);
-            String errorMessage = validationMessageSource.getMessage(
+            String errorMessage = messageSource.getMessage(
                     errorMessageKey,
                     null,
                     LocaleContextHolder.getLocale()
