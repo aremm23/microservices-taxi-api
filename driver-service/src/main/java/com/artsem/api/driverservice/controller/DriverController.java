@@ -137,8 +137,7 @@ public class DriverController implements DriverApi {
     @PreAuthorize("""
             (hasRole('ROLE_DRIVER') &&
             @userAccessValidator.isUserAuthorizedForId(#id, authentication)) ||
-            hasRole('ROLE_ADMIN') ||
-            @userAccessValidator.isClientAuthorizedForRequest('ride-service', authentication)
+            hasRole('ROLE_ADMIN')
             """)
     @PutMapping("/{id}/status")
     public ResponseEntity<DriverResponseDto> updateDriverStatus(

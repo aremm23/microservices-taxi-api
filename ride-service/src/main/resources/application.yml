@@ -31,11 +31,6 @@ kafka:
       replicas: 1
       partitions: 1
 
-keycloak:
-  client-id: ride-service
-  client-secret: ${CLIENT_SECRET:**********}
-  auth-server-url: ${AUTH_SERVICE_URI:http://localhost:9082}/realms/taxi-app-realm/protocol/openid-connect/token
-
 eureka:
   client:
     register-with-eureka: true
