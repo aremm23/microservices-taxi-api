@@ -185,7 +185,7 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://host.docker.internal:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -353,7 +353,7 @@ services:
       - REDIS_HOST=redis
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - EUREKA_URI=eureka-service:8761
-      - KAFKA_BOOSTRAP_SERVERS_URI=kafka:9092
+      - KAFKA_BOOSTRAP_SERVERS_URI=kafka:29092
       - MONGO_URI=ride-service-mongo:27017
       - AUTH_SERVICE_URI=http://keycloak:9082
     ports:
@@ -415,6 +415,41 @@ services:
     depends_on:
       - eureka-service
       - rabbitmq
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    restart: always
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--web.enable-lifecycle"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    restart: always
+    volumes:
+      - ./monitoring/grafana/provisioning/datasource:/etc/grafana/provisioning/datasource
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: true
+    healthcheck:
+      test: curl --fail -s http://localhost:3000/api/health || exit 1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
 
 volumes:
   kc-postgres_data:

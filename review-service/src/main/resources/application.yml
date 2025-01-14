@@ -20,6 +20,20 @@ spring:
           issuer-uri: ${OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:9082/realms/taxi-app-realm}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 springdoc:
   api-docs:
     path: /review-service-docs/v3/api-docs
