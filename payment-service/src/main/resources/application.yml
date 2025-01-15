@@ -38,6 +38,20 @@ eureka:
     service-url:
       defaultZone: http://${EUREKA_URI:localhost:8761}/eureka/
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 openapi:
   contact:
     email: artsem.maiseyenka@gmail.com
