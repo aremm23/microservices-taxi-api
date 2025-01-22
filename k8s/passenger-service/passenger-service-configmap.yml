@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: passenger-config
+data:
+  RABBIT_HOST: "rabbitmq"
+  POSTGRES_URI: "passenger-service-postgres:5434"
+  OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:9082/realms/taxi-app-realm"
+  EUREKA_URI: "eureka-service:8761"

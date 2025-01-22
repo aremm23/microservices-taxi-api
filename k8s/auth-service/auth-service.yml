@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+  labels:
+    app: auth-service
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      initContainers:
+        - name: wait-for-keycloak
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "until nslookup keycloak.default.svc.cluster.local; do echo waiting for keycloak; sleep 2; done;"
+        - name: wait-for-rabbitmq
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "until nslookup rabbitmq.default.svc.cluster.local; do echo waiting for rabbitmq; sleep 2; done;"
+      containers:
+        - name: auth-service
+          image: aremm23/auth-service:2.0
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 40
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 40
+            periodSeconds: 5
+      automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30001
+  selector:
+    app: auth-service

@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: review-service-mysql-config
+data:
+  MYSQL_ROOT_PASSWORD: "root"
+  MYSQL_DATABASE: "review_db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service-mysql
+  template:
+    metadata:
+      labels:
+        app: review-service-mysql
+    spec:
+      containers:
+        - name: review-service-mysql
+          image: mysql:9.1.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: review-service-mysql-config
+                  key: MYSQL_DATABASE
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: review-service-mysql-config
+                  key: MYSQL_ROOT_PASSWORD
+          volumeMounts:
+            - name: review-service-mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: review-service-mysql-data
+          persistentVolumeClaim:
+            claimName: review-service-mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service-mysql
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: review-service-mysql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: review-service-mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

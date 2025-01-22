@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service-deployment
+  labels:
+    app: review-service
+spec:
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+        - name: review-service
+          image: aremm23/review-service:3.0
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: review-config
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 100
+            periodSeconds: 50
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            initialDelaySeconds: 100
+            periodSeconds: 50
+      automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8085
+      targetPort: 8085
+      nodePort: 30005
+  selector:
+    app: review-service

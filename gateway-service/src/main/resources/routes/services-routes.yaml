@@ -51,7 +51,7 @@ spring:
         - id: review_route
           uri: lb://review-service
           predicates:
-            - Path=api/v1/reviews/**, /api/v1/rating/**
+            - Path=/api/v1/reviews/**, /api/v1/rating/**
           filters:
             - name: CircuitBreaker
               args:

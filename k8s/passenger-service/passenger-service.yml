@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: passenger-service-deployment
+  labels:
+    app: passenger-service
+spec:
+  selector:
+    matchLabels:
+      app: passenger-service
+  template:
+    metadata:
+      labels:
+        app: passenger-service
+    spec:
+      containers:
+        - name: passenger-service
+          image: aremm23/passenger-service:3.0
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: passenger-config
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 100
+            periodSeconds: 100
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8082
+            initialDelaySeconds: 100
+            periodSeconds: 100
+      automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: passenger-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8082
+      targetPort: 8082
+      nodePort: 30002
+  selector:
+    app: passenger-service

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: logstash:7.14.2
+          ports:
+            - containerPort: 5001
+            - containerPort: 9600
+          env:
+            - name: LS_JAVA_OPTS
+              value: "-Xmx512m -Xms256m"
+            - name: ELASTIC_USER
+              value: "elastic"
+            - name: ELASTIC_PASSWORD
+              value: "elastic"
+            - name: XPACK_MONITORING_ELASTICSEARCH_USERNAME
+              value: "elastic"
+            - name: XPACK_MONITORING_ELASTICSEARCH_PASSWORD
+              value: "elastic"
+            - name: XPACK_MONITORING_ELASTICSEARCH_HOSTS
+              value: "elasticsearch:9200"
+            - name: XPACK_MONITORING_ENABLED
+              value: "true"
+          volumeMounts:
+            - name: logstash-config
+              mountPath: /usr/share/logstash/pipeline
+      volumes:
+        - name: logstash-config
+          configMap:
+            name: logstash-pipeline-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+spec:
+  ports:
+    - name: tcp-5001
+      port: 5001
+      targetPort: 5001
+    - name: tcp-9600
+      port: 9600
+      targetPort: 9600
+  selector:
+    app: logstash
+  type: ClusterIP

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+data:
+  RABBIT_HOST: "rabbitmq"
+  OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:9082/realms/taxi-app-realm"
+  APP_KEYCLOAK_SERVER_URL: "http://keycloak:9082"
+  EUREKA_URI: "eureka-service:8761"

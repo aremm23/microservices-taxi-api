@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driver-service-deployment
+  labels:
+    app: driver-service
+spec:
+  selector:
+    matchLabels:
+      app: driver-service
+  template:
+    metadata:
+      labels:
+        app: driver-service
+    spec:
+      initContainers:
+        - name: wait-for-keycloak
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "until nslookup keycloak.default.svc.cluster.local; do echo waiting for keycloak; sleep 2; done;"
+        - name: wait-for-rabbitmq
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "until nslookup rabbitmq.default.svc.cluster.local; do echo waiting for rabbitmq; sleep 2; done;"
+      containers:
+        - name: driver-service
+          image: aremm23/driver-service:3.0
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: driver-config
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 100
+            periodSeconds: 100
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 100
+            periodSeconds: 100
+      automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driver-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8083
+      targetPort: 8083
+      nodePort: 30003
+  selector:
+    app: driver-service

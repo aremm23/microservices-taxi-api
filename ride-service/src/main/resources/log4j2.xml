@@ -3,7 +3,7 @@
     <Properties>
         <Property name="application.name">ride-service</Property>
         <Property name="socket.host">logstash</Property>
-        <Property name="socket.port">5000</Property>
+        <Property name="socket.port">5001</Property>
         <Property name="console.thresholdFilter">DEBUG</Property>
         <Property name="socket.thresholdFilter">INFO</Property>
     </Properties>

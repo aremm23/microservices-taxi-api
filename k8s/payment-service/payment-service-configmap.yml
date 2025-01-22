@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-config
+data:
+  POSTGRES_URI: "payment-service-postgres:5435"
+  OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://keycloak:9082/realms/taxi-app-realm"
+  EUREKA_URI: "eureka-service:8761"
+  KAFKA_BOOSTRAP_SERVERS_URI: "kafka-service:9092"
