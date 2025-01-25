@@ -51,6 +51,13 @@ management:
     metrics:
       export:
         enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_URI:localhost:9411}/api/v2/spans
 
 openapi:
   contact:
@@ -70,3 +77,7 @@ stripe:
   cancel-url: ${FRONTEND_CANCEL_URL:https://localhost:8086/success}
   webhook:
     successSecretKey: ${WEBHOOK_SUCCESS_SECRET_KEY:your-key}
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG

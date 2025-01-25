@@ -1,6 +1,5 @@
 server:
   port: 8082
-
 spring:
   datasource:
     url: jdbc:postgresql://${POSTGRES_URI:localhost:5434}/passenger_service_db
@@ -46,6 +45,13 @@ management:
     metrics:
       export:
         enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_URI:localhost:9411}/api/v2/spans
 
 springdoc:
   api-docs:

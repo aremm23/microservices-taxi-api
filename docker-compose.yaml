@@ -231,6 +231,7 @@ services:
       - POSTGRES_URI=passenger-service-postgres:5432
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - EUREKA_URI=eureka-service:8761
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8082:8082"
     healthcheck:
@@ -256,6 +257,7 @@ services:
       - POSTGRES_URI=driver-service-postgres:5432
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - EUREKA_URI=eureka-service:8761
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8083:8083"
     healthcheck:
@@ -281,6 +283,7 @@ services:
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - APP_KEYCLOAK_SERVER_URL=http://keycloak:9082
       - EUREKA_URI=eureka-service:8761
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8081:8081"
     healthcheck:
@@ -328,6 +331,7 @@ services:
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - EUREKA_URI=eureka-service:8761
       - KAFKA_BOOSTRAP_SERVERS_URI=kafka:9092
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8086:8086"
     healthcheck:
@@ -356,6 +360,7 @@ services:
       - KAFKA_BOOSTRAP_SERVERS_URI=kafka:29092
       - MONGO_URI=ride-service-mongo:27017
       - AUTH_SERVICE_URI=http://keycloak:9082
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8084:8084"
     healthcheck:
@@ -381,6 +386,7 @@ services:
       - MYSQL_URI=review-service-mysql:3306
       - OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:9082/realms/taxi-app-realm
       - EUREKA_URI=eureka-service:8761
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8085:8085"
     healthcheck:
@@ -404,6 +410,7 @@ services:
       - RABBIT_HOST=rabbitmq
       - REDIS_HOST=redis
       - EUREKA_URI=eureka-service:8761
+      - ZIPKIN_URI=zipkin:9411
     ports:
       - "8087:8087"
     healthcheck:
@@ -496,6 +503,15 @@ services:
     depends_on:
       - elasticsearch
       - logstash
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    environment:
+       - STORAGE_TYPE=mem
+    restart: always
 
 volumes:
   kc-postgres_data:

@@ -10,7 +10,7 @@
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <ThresholdFilter level="${console.thresholdFilter}"/>
-            <PatternLayout pattern="%d %-5p [%t] %c{10} - %m%n"/>
+            <PatternLayout pattern="%d %-5p [%t] [%X{traceId}] [%X{spanId}] %c{10} - %m%n"/>
         </Console>
         <Socket name="SOCKET" host="${socket.host}" port="${socket.port}" immediateFlush="true">
             <ThresholdFilter level="${socket.thresholdFilter}"/>
