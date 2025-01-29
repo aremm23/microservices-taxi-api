@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: passenger-service-postgres-config
+data:
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_DB: "passenger_service_db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: passenger-service-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: passenger-service-postgres
+  template:
+    metadata:
+      labels:
+        app: passenger-service-postgres
+    spec:
+      containers:
+        - name: passenger-service-postgres
+          image: postgres:17.2
+          ports:
+            - containerPort: 5434
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: passenger-service-postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: passenger-service-postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: passenger-service-postgres-config
+                  key: POSTGRES_DB
+            - name: PGPORT
+              value: "5434"
+          volumeMounts:
+            - name: passenger-service-postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: passenger-service-postgres-data
+          persistentVolumeClaim:
+            claimName: passenger-service-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: passenger-service-postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5434
+      targetPort: 5434
+  selector:
+    app: passenger-service-postgres

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:7.14.2
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xmx512m -Xms256m"
+            - name: ELASTIC_PASSWORD
+              value: "elastic"
+            - name: discovery.type
+              value: "single-node"
+            - name: xpack.security.enabled
+              value: "true"
+          volumeMounts:
+            - name: elasticsearch-data
+              mountPath: /usr/share/elasticsearch/data
+      volumes:
+        - name: elasticsearch-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
+  selector:
+    app: elasticsearch
+  type: ClusterIP

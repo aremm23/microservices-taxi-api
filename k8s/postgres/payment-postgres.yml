@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-service-postgres-config
+data:
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_DB: "payment_service_db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service-postgres
+  template:
+    metadata:
+      labels:
+        app: payment-service-postgres
+    spec:
+      containers:
+        - name: payment-service-postgres
+          image: postgres:17.2
+          ports:
+            - containerPort: 5435
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-service-postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-service-postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-service-postgres-config
+                  key: POSTGRES_DB
+            - name: PGPORT
+              value: "5435"
+          volumeMounts:
+            - name: payment-service-postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: payment-service-postgres-data
+          persistentVolumeClaim:
+            claimName: payment-service-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service-postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5435
+      targetPort: 5435
+  selector:
+    app: payment-service-postgres

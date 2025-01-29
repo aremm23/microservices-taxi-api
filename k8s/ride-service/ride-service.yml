@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ride-service-deployment
+  labels:
+    app: ride-service
+spec:
+  selector:
+    matchLabels:
+      app: ride-service
+  template:
+    metadata:
+      labels:
+        app: ride-service
+    spec:
+      initContainers:
+        - name: wait-for-keycloak
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "until nslookup keycloak.default.svc.cluster.local; do echo waiting for keycloak; sleep 2; done;"
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              until nslookup ride-service-mongo.default.svc.cluster.local &&
+              echo "MongoDB is reachable" &&
+              nc -z ride-service-mongo 27017; do 
+                echo "Waiting for MongoDB..."; 
+                sleep 2; 
+              done;
+        - name: wait-for-redis
+          image: busybox
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              until nslookup redis.default.svc.cluster.local &&
+              echo "Redis is reachable" &&
+              nc -z redis 6379; do 
+                echo "Waiting for Redis..."; 
+                sleep 2; 
+              done;
+      containers:
+        - name: ride-service
+          image: aremm23/ride-service:5.0
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: ride-config
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 100
+            periodSeconds: 100
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            initialDelaySeconds: 100
+            periodSeconds: 100
+      automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ride-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8084
+      targetPort: 8084
+      nodePort: 30004
+  selector:
+    app: ride-service

@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: driver-service-postgres-config
+data:
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"
+  POSTGRES_DB: "driver_service_db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driver-service-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: driver-service-postgres
+  template:
+    metadata:
+      labels:
+        app: driver-service-postgres
+    spec:
+      containers:
+        - name: driver-service-postgres
+          image: postgres:17.2
+          ports:
+            - containerPort: 5433
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: driver-service-postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: driver-service-postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: driver-service-postgres-config
+                  key: POSTGRES_DB
+            - name: PGPORT
+              value: "5433"
+          volumeMounts:
+            - name: driver-service-postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: driver-service-postgres-data
+          persistentVolumeClaim:
+            claimName: driver-service-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: driver-service-postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5433
+      targetPort: 5433
+  selector:
+    app: driver-service-postgres
